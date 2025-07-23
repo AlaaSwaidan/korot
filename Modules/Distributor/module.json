@@ -1,0 +1,13 @@
+{
+    "name": "Distributor",
+    "alias": "distributor",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Distributor\\Providers\\DistributorServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

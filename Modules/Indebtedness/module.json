@@ -1,0 +1,13 @@
+{
+    "name": "Indebtedness",
+    "alias": "indebtedness",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Indebtedness\\Providers\\IndebtednessServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

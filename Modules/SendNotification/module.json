@@ -1,0 +1,13 @@
+{
+    "name": "SendNotification",
+    "alias": "sendnotification",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\SendNotification\\Providers\\SendNotificationServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

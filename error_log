@@ -1,0 +1,4 @@
+[03-Sep-2023 23:45:48 Asia/Riyadh] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 20480 bytes) in /home/korot/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 375
+[03-Sep-2023 23:45:48 Asia/Riyadh] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 28672 bytes) in /home/korot/public_html/vendor/composer/ClassLoader.php on line 571
+[04-Sep-2023 00:23:10 Asia/Riyadh] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 20480 bytes) in /home/korot/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 375
+[04-Sep-2023 00:23:10 Asia/Riyadh] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 32768 bytes) in /home/korot/public_html/vendor/laravel/framework/src/Illuminate/Auth/EloquentUserProvider.php on line 1

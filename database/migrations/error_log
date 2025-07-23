@@ -1,0 +1,24 @@
+[10-Jul-2023 01:05:44 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/korot/public_html/database/migrations/2023_02_01_140258_add_total_mine_profits_to_statistics_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/korot/public_html/database/migrations/2023_02_01_140258_add_total_mine_profits_to_statistics_table.php on line 7
+[10-Jul-2023 01:05:44 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/korot/public_html/database/migrations/2023_02_01_140258_add_total_mine_profits_to_statistics_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/korot/public_html/database/migrations/2023_02_01_140258_add_total_mine_profits_to_statistics_table.php on line 7
+[10-Jul-2023 01:05:44 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/korot/public_html/database/migrations/2023_03_05_134542_add_transfers_total_check_to_distributors_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/korot/public_html/database/migrations/2023_03_05_134542_add_transfers_total_check_to_distributors_table.php on line 7
+[10-Jul-2023 01:05:45 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/korot/public_html/database/migrations/2023_03_05_134542_add_transfers_total_check_to_distributors_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/korot/public_html/database/migrations/2023_03_05_134542_add_transfers_total_check_to_distributors_table.php on line 7
+[10-Jul-2023 01:05:45 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/korot/public_html/database/migrations/2023_02_14_171453_add_total_discount_amount_to_purchase_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/korot/public_html/database/migrations/2023_02_14_171453_add_total_discount_amount_to_purchase_orders_table.php on line 7
+[10-Jul-2023 01:05:45 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/korot/public_html/database/migrations/2023_02_14_171453_add_total_discount_amount_to_purchase_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/korot/public_html/database/migrations/2023_02_14_171453_add_total_discount_amount_to_purchase_orders_table.php on line 7

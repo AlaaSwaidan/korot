@@ -1,0 +1,17 @@
+{
+    "Admin": true,
+    "SuperAdmin": true,
+    "Distributor": true,
+    "Merchant": true,
+    "Company": true,
+    "Role": true,
+    "Transfers": true,
+    "Collections": true,
+    "Indebtedness": true,
+    "Processes": true,
+    "BankTransfer": true,
+    "SendNotification": true,
+    "Purchases": true,
+    "Accounts": true,
+    "Reports": true
+}
