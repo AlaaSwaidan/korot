@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Merchant\CreditController;
 use App\Http\Controllers\Api\Merchant\IndebtednessController;
 use App\Http\Controllers\Api\Merchant\OrderController;
 use App\Http\Controllers\Api\Merchant\StatisticController;
+use App\Http\Controllers\Api\ZainIntegrationController;
 use App\Http\Controllers\Api\ApiController;
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,7 @@ Route::namespace('Api')->middleware(['Lang'])->group( function () {
         Route::get( '/order-details/{id}', [OrderController::class,"order_details"]);
         Route::get( '/statistics', [StatisticController::class,"statistics"]);
         Route::get( '/merchant-reports', [StatisticController::class,"merchant_reports"]);
+        Route::post( '/pay-zain', [ZainIntegrationController::class,"topUp"]);
 
     });
 

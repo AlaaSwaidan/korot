@@ -11,6 +11,7 @@ use App\Http\Resources\Api\Distributor\MerchantTransactionsResource;
 use App\Models\Distributor;
 use App\Models\DistributorIndebtedness;
 use App\Models\Merchant;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Transfers\Entities\Transfer;
@@ -34,6 +35,11 @@ class HomeController extends Controller
             });
         }
         $merchants = $merchants->paginate(20);
+        $merchants->getCollection()->transform(function ($data) {
+            $data->is_inactive = $data->last_login_at === null ||
+                Carbon::parse($data->last_login_at)->lt(now()->subDays(7));
+            return $data;
+        });
         HomeResource::collection($merchants);
 
         return ApiController::respondWithSuccess($merchants);

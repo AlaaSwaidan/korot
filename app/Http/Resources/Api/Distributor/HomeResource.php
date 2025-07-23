@@ -22,6 +22,7 @@ class HomeResource extends JsonResource
         $data= [
             'id'=>$this->id,
             'name'=>$this->name,
+            'is_active'=>!$this->is_inactive,
             'brand_name'=>$this->brand_name,
             'date' => $this->created_at->locale(app()->getLocale())->isoFormat('Do MMM, Y ,h:mm A') ,
 
