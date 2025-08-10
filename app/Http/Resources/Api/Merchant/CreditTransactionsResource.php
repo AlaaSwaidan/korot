@@ -22,9 +22,11 @@ class CreditTransactionsResource extends JsonResource
             'id'                 => $this->id ,
             'name'                 => trans('api.recharge'),
             'amount'                 => $this->amount ,
+            'confirm'                 => $this->confirm ,
             'geidea_percentage'                 => $this->geidea_percentage ,
             'geidea_commission'                 => $this->geidea_commission ,
             'type'            => getPayType( $this->pay_type) ,
+            'pay_type'            =>  $this->pay_type ,
             'date'                 => $this->created_at->locale(app()->getLocale())->isoFormat('Do MMMM, Y') ,
 
         ];

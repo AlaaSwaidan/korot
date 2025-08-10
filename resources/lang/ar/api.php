@@ -16,7 +16,7 @@ return [
     'not_available'                                      => 'غير متاح',
     'recharge'                                           => 'شحن',
     'bank_transfer'                                      => 'تحويل بنكي',
-    'charge_balance_successfuly'                         => "تم شحن : balance. \n الرصيد قبل الشحن : old. \n الرصيد الحالي: :new.",
+    'charge_balance_successfuly'                         => "تم شحن :balance. \n الرصيد قبل الشحن :old. \n الرصيد الحالي: :new.",
 
     'balance'                           => 'اضافة رصيد',
     'online'                            => 'دفع الكتروني',

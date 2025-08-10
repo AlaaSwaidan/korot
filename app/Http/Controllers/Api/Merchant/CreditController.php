@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Merchant;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Merchant\BuyCreditOnlineRequest;
+use App\Http\Requests\Api\Merchant\ChargeCreditOnlineRequest;
 use App\Http\Requests\Api\Merchant\TransferCreditToBankRequest;
 use App\Http\Resources\Api\Merchant\BankInfoResource;
 use App\Http\Resources\Api\Merchant\CreditTransactionsResource;
@@ -30,7 +31,7 @@ class CreditController extends Controller
         return ApiController::respondWithSuccess($data);
     }
     public function credit_transaction(Request $request){
-        $transaction =$this->user->userable()->where('confirm',1)->where('type','recharge')->Order();
+        $transaction =$this->user->userable()->where('type','recharge')->Order();
         if ($request->type == "week"){
             $transaction = $transaction->whereBetween('created_at',
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
@@ -73,18 +74,15 @@ class CreditController extends Controller
         return response()->json(['success'=> true,'status' =>  http_response_code() , 'data'=>null , 'message'=>null])->setStatusCode(200);
 
     }
-    public function buy_credit_online(BuyCreditOnlineRequest $request){
+    public function charge_credit_online(ChargeCreditOnlineRequest $request){
         $request['type']="recharge";
         $request['userable_id'] = $this->user->id;
         $request['userable_type']=get_class($this->user);
         $request['pay_type']="online";
-        $request['confirm'] = 1;
+        $request['confirm'] = 0;
         $percentage = $this->user->geidea_percentage ? $this->user->geidea_percentage : settings()->geidea_percentage;
         $get_commission = $request->amount * $percentage;
-        $statistics = \App\Models\Statistic::find(1);
-        $statistics->update([
-            'geidea_commission' => $statistics->geidea_commission + $get_commission
-        ]);
+
         $result = ($request->amount) - $get_commission;
 
 
@@ -92,21 +90,42 @@ class CreditController extends Controller
         $request['geidea_percentage']=$percentage;
         $transfer = Transfer::create($request->all());
         $request['balance_total']=$this->user->balance + $result;
+
+
+
+
+
+        $data =new CreditTransactionsResource($transfer);
+
+        return response()->json(['success'=> true,'status' =>  http_response_code() , 'data'=>$data , 'message'=> null])->setStatusCode(200);
+
+    }
+    public function buy_credit_online(BuyCreditOnlineRequest $request){
+        $transfer = Transfer::find($request->transfer_id);
+        $transfer->update([
+            'confirm'=>1
+        ]);
+
+        $statistics = \App\Models\Statistic::find(1);
+        $statistics->update([
+            'geidea_commission' => $statistics->geidea_commission + $transfer->geidea_commission
+        ]);
+
         $wallet = Wallet::create([
             'transfer_id'=>$transfer->id,
             'merchant_id'=>$this->user->id,
-            'balance'=>$result,
+            'balance'=>$transfer->amount,
             'previous_balance'=>$this->user->balance,
-            'current_balance'=>$this->user->balance + $result,
+            'current_balance'=>$this->user->balance + $transfer->amount,
             'date'=>Carbon::now(),
         ]);
         $old_balance =$this->user->balance;
         $this->user->update([
-            'balance'=>$this->user->balance + $result,
+            'balance'=>$this->user->balance + $transfer->amount,
         ]);
 
         /*محفظة جيديا */
-        add_geadia($this->user,$request->amount,"charge",$transfer,$request->transaction_id);
+        add_geadia($this->user,$transfer->amount,"charge",$transfer,$request->transaction_id);
 
         updateTransfer($transfer,$this->user);
 
@@ -121,7 +140,7 @@ class CreditController extends Controller
         sendMobileNotification($this->user->id,get_class($this->user),title_notifications('recharge_online'),messages_notifications('recharge_online',$request->amount),6,null);
         saveNotification('6', serialize(title_notifications('recharge_online')) , serialize(messages_notifications('recharge_online',$request->amount)),$this->user->id,get_class($this->user));
 
-        return response()->json(['success'=> true,'status' =>  http_response_code() , 'data'=>$data , 'message'=>trans('api.charge_balance_successfuly',['balance'=>number_format($request->amount,2),'geadia'=> $percentage ,'old'=> number_format($old_balance,2), 'new'=>number_format($this->user->balance,2) ])])->setStatusCode(200);
+        return response()->json(['success'=> true,'status' =>  http_response_code() , 'data'=>$data , 'message'=>trans('api.charge_balance_successfuly',['balance'=>number_format($request->amount,2),'geadia'=> $transfer->geidea_percentage ,'old'=> number_format($old_balance,2), 'new'=>number_format($this->user->balance,2) ])])->setStatusCode(200);
 
     }
 }
