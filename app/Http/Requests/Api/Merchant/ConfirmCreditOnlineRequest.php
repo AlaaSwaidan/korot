@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\Merchant;
 use App\Http\Requests\REQUEST_API_PARENT;
 use Illuminate\Foundation\Http\FormRequest;
 
-class BuyCreditOnlineRequest extends REQUEST_API_PARENT
+class ConfirmCreditOnlineRequest extends REQUEST_API_PARENT
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class BuyCreditOnlineRequest extends REQUEST_API_PARENT
     public function rules()
     {
         return [
-            'amount' =>'required|numeric',
+            'transfer_id' =>'required|exists:transfers,id',
             'transaction_id' =>'required',
 
         ];

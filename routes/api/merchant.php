@@ -62,6 +62,7 @@ Route::namespace('Api')->middleware(['Lang'])->group( function () {
         Route::post( '/buy-credit-bank-transfer', [CreditController::class,"buy_credit_bank_transfer"]);
         Route::post( '/buy-credit-online', [CreditController::class,"buy_credit_online"]);
         Route::post( '/charge-credit-online', [CreditController::class,"charge_credit_online"]);
+        Route::post( '/confirm-credit-online', [CreditController::class,"confirm_credit_online"]);
         Route::get( '/credit-transaction', [CreditController::class,"credit_transaction"]);
 
         Route::post( '/indebtedness-bank-transfer', [IndebtednessController::class,"indebtedness_transfer_bank"]);
