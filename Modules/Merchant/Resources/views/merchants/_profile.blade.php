@@ -232,6 +232,11 @@
                 <a class="nav-link text-active-primary ms-0 me-10 py-5 {{ Route::currentRouteName() == 'admin.merchants.profile-reports-sales' ? 'active' : '' }}" href="{{ route('admin.merchants.profile-reports-sales',$merchant->id) }}">تقرير المبيعات</a>
             </li>
             <!--end::Nav item-->
+            <!--begin::Nav item-->
+            <li class="nav-item mt-2">
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 {{ Route::currentRouteName() == 'admin.merchants.profile-invoice-sales' ? 'active' : '' }}" href="{{ route('admin.merchants.profile-invoice-sales',$merchant->id) }}">الفواتير</a>
+            </li>
+            <!--end::Nav item-->
         </ul>
         <!--begin::Navs-->
     </div>

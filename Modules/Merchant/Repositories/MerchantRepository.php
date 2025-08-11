@@ -205,4 +205,64 @@ $data->getCollection()->transform(function ($data) {
 
 
     }
+    public  function sales_invoice_print($merchant,$request) {
+        $orders  =$merchant->orders()->where('paid_order',"paid")->where('parent_id','!=',null);
+        $startDate = Carbon::parse($request->from_date);
+        $endDate = Carbon::parse($request->to_date);
+        if ($request->from_date && $request->to_date){
+            $orders = $orders->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate]);
+            $all = $orders->get()->unique('package_id')->map(function ($all_transactions) use ($startDate,$endDate,$merchant){
+                $orders =$all_transactions->where('parent_id','!=',null)
+                    ->where('paid_order',"paid")
+                    ->where('merchant_id',$merchant->id)->where('package_id',$all_transactions->package_id)
+                    ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate]);
+                $commission = Transfer::whereOrderId($all_transactions->id)->first();
+                $merchant_price =$orders->sum('merchant_price');
+                $card_price =$orders->sum('card_price');
+                $geidea_commission =$commission->geidea_commission;
+                $all_cost =$commission->geidea_commission ? $commission->geidea_commission + $merchant_price : $merchant_price;
+                $total =$orders->sum('card_price') - $merchant_price  - $geidea_commission;
+                $all_transactions['total_count']=$orders->count();
+                $all_transactions['merchant_price']=$merchant_price;
+                $all_transactions['card_price']=$card_price;
+                $all_transactions['profits']=($total);
+                $all_transactions['geidea_commission']=($geidea_commission);
+                $all_transactions['all_cost']=($all_cost);
+                return $all_transactions;
+            });
+            $qrcode= generateQrCode($all);
+
+            $all_data=[
+                'user'=>$merchant,
+                'from_date'=>$request->from_date,
+                'to_date'=>$request->to_date,
+                'orders'=>$all,
+                'qrcode'=>$qrcode,
+            ];
+
+
+
+            $html = view('merchant::pdf.sales_invoice_pdf')->with($all_data)->render();
+            $id = $merchant->id;
+            $pdfarr = [
+                'title'=>'الفاتورة ',
+                'data'=>$html, // render file blade with content html
+                'header'=>['show'=>false], // header content
+                'footer'=>['show'=>false], // Footer content
+                'font'=>'aealarabiya', //  dejavusans, aefurat ,aealarabiya ,times
+                'font-size'=>12, // font-size
+                'text'=>'', //Write
+                'rtl'=>true, //true or false
+                'creator'=>'Korot', // creator file - you can remove this key
+                'keywords'=>$id , // keywords file - you can remove this key
+                'subject'=>'Invoice', // subject file - you can remove this key
+                'filename'=>'sales-reports-'.$id.'.pdf', // filename example - invoice.pdf
+                'display'=>'download', // stream , download , print
+            ];
+
+            return PDF::HTML($pdfarr);
+        }
+
+
+    }
 }

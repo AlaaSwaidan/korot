@@ -58,6 +58,9 @@ Route::group(['prefix' => '/admin', 'as' => 'admin.', 'middleware' => ['CheckAct
     Route::get( '/merchants/profile-reports-sales/{merchant}', [MerchantController::class,"sales_reports"])->name('merchants.profile-reports-sales');
     Route::get( '/merchants/profile-reports-sales-print/{merchant}', [MerchantController::class,"sales_reports_print"])->name('merchants.profile-reports-sales-print');
 
+    Route::get( '/merchants/profile-invoice-sales/{merchant}', [MerchantController::class,"sales_invoice"])->name('merchants.profile-invoice-sales');
+    Route::get( '/merchants/profile-invoice-sales-print/{merchant}', [MerchantController::class,"sales_invoice_print"])->name('merchants.profile-invoice-sales-print');
+
 
     /*end -- merchants*/
     /* start merchants prices */

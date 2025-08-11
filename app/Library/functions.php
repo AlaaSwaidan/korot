@@ -12,6 +12,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Salla\ZATCA\GenerateQrCode;
+use Salla\ZATCA\Tags\InvoiceDate;
+use Salla\ZATCA\Tags\InvoiceTaxAmount;
+use Salla\ZATCA\Tags\InvoiceTotalAmount;
+use Salla\ZATCA\Tags\Seller;
+use Salla\ZATCA\Tags\TaxNumber;
 
 //use FCM;
 
@@ -466,4 +472,29 @@ function userRatingsStars($rate)
 
 function HandleSMSResponse($response){
     return "code status is : ".$response->getCode()." error message : ". $response->getMessage();
+}
+function generateQrCode( $orders) {
+    $total = number_format($orders->sum('all_cost'),2);
+    $generatedString = GenerateQrCode::fromArray([
+        new Seller(settings()->name['ar']), // seller name
+        new TaxNumber(300453343300003), // seller tax number
+        new InvoiceDate(Carbon::now()->toISOString()), // invoice date as Zulu ISO8601 @see https://en.wikipedia.org/wiki/ISO_8601
+        new InvoiceTotalAmount(number_format($total,2,".","")), // invoice total amount
+        new InvoiceTaxAmount(number_format(0,2,".","")) // invoice tax amount
+        // TODO :: Support others tags
+    ])->toBase64();
+//    return $displayQRCodeAsBase64;
+
+    /* qr code generate */
+    $name = time().randNumber(4);
+    QrCode::size(500)
+//            ->color(8, 154, 175)
+//            ->backgroundColor(255, 255, 255)
+        ->style('round')
+        ->generate($generatedString, public_path('uploads/qr-code-images/'.$name.'.svg'));
+
+    $image =$name.'.svg';
+
+
+    return $image;
 }

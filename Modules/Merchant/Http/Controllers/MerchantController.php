@@ -127,9 +127,20 @@ class MerchantController extends Controller
 
         return view('merchant::merchants.sales_reports',compact('merchant'));
     }
+    public function sales_invoice(Merchant $merchant)
+    {
+
+        return view('merchant::merchants.sales_invoice',compact('merchant'));
+    }
     public function sales_reports_print(Request $request,Merchant $merchant)
     {
         $pdf = $this->repository->generate_pdf($merchant,$request);
+        return $pdf;
+
+    }
+    public function sales_invoice_print(Request $request,Merchant $merchant)
+    {
+        $pdf = $this->repository->sales_invoice_print($merchant,$request);
         return $pdf;
 
     }
