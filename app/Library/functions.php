@@ -474,7 +474,7 @@ function HandleSMSResponse($response){
     return "code status is : ".$response->getCode()." error message : ". $response->getMessage();
 }
 function generateQrCode( $orders) {
-    $total = number_format($orders->sum('all_cost'),2);
+    $total = $orders->sum('all_cost');
     $generatedString = GenerateQrCode::fromArray([
         new Seller(settings()->name['ar']), // seller name
         new TaxNumber(300453343300003), // seller tax number

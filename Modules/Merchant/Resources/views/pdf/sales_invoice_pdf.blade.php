@@ -45,6 +45,8 @@
         <td style="text-align:left;">
             @if($qrcode != null)
                 <img alt="qrcode" style="border: none;width: 100px;height: 100px;" src="{{ public_path('uploads/qr-code-images/'.$qrcode)  }}" />
+                 <br>
+                فاتورة ضريبية
             @endif
         </td>
     </tr>
@@ -97,13 +99,13 @@
     <thead>
     <tr>
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">#</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">اسم البطاقة</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الكمية</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">المبيعات</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">عمولة مدى</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة الاجمالية</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الربح</th>
+        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">اسم المنتج - Product name</th>
+        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الكمية - Quantity</th>
+        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">المبيعات - Sales</th>
+        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة - Cost</th>
+        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">عمولة مدى - Mada Commision</th>
+        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة الاجمالية - Total</th>
+        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الربح - Profit</th>
 {{--        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الرصيد</th>--}}
 
 
