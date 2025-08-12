@@ -103,7 +103,7 @@
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الكمية - Quantity</th>
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">المبيعات - Sales</th>
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة - Cost</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">عمولة مدى - Mada Commision</th>
+{{--        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">عمولة مدى - Mada Commision</th>--}}
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة الاجمالية - Total</th>
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الربح - Profit</th>
 {{--        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الرصيد</th>--}}
@@ -123,7 +123,7 @@
             <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->card_price,2) }}</td>
             <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->merchant_price,2) }}</td>
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->cost,2) }}</td>--}}
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->geidea_commission,2) }}</td>
+{{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->geidea_commission,2) }}</td>--}}
             <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->all_cost,2) }}</td>
             <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->profits,2) }} </td>
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{  number_format(\Modules\Transfers\Entities\Transfer::whereOrderId($order->parent_id)->latest('created_at')->first()->balance_total,2) }} </td>--}}
@@ -142,9 +142,9 @@
         <td style="border:1px solid #dee2e6;text-align:center;">
             <span>{{ number_format($orders->sum('merchant_price'),2)  }}</span>
         </td>
-        <td style="border:1px solid #dee2e6;text-align:center;">
-            <span>{{ number_format($orders->sum('geidea_commission'),2) }}</span>
-        </td>
+{{--        <td style="border:1px solid #dee2e6;text-align:center;">--}}
+{{--            <span>{{ number_format($orders->sum('geidea_commission'),2) }}</span>--}}
+{{--        </td>--}}
         <td style="border:1px solid #dee2e6;text-align:center;">
             <span>{{ number_format($orders->sum('all_cost'),2) }}</span>
         </td>
