@@ -2,7 +2,7 @@
 <html direction="rtl" dir="rtl" style="direction: rtl">
 <head>
     <meta charset="utf-8" />
-    <title>لوحة التحكم | بيانات كشف الحساب</title>
+    <title>لوحة التحكم | الفاتورة الضريبية</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="og:title" content="{{trans('web.meta_title')}}" />
@@ -70,7 +70,7 @@
 
         </td>
         <td style="border:1px solid #dee2e6;">
-            <span>بيانات كشف الحساب</span>
+            <span>بيانات الفاتورة الضريبية</span>
             <br />
             <span><strong>    من تاريخ : {{ $from_date }} </strong></span>
             <br />
@@ -105,7 +105,7 @@
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة - Cost</th>
 {{--        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">عمولة مدى - Mada Commision</th>--}}
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة الاجمالية - Total</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الربح - Profit</th>
+{{--        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الربح - Profit</th>--}}
 {{--        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الرصيد</th>--}}
 
 
@@ -125,7 +125,7 @@
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->cost,2) }}</td>--}}
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->geidea_commission,2) }}</td>--}}
             <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->all_cost,2) }}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->profits,2) }} </td>
+{{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->profits,2) }} </td>--}}
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{  number_format(\Modules\Transfers\Entities\Transfer::whereOrderId($order->parent_id)->latest('created_at')->first()->balance_total,2) }} </td>--}}
 
        </tr>
@@ -148,9 +148,9 @@
         <td style="border:1px solid #dee2e6;text-align:center;">
             <span>{{ number_format($orders->sum('all_cost'),2) }}</span>
         </td>
-        <td style="border:1px solid #dee2e6;text-align:center;">
-            <span>{{ number_format($orders->sum('profits'),2) }}</span>
-        </td>
+{{--        <td style="border:1px solid #dee2e6;text-align:center;">--}}
+{{--            <span>{{ number_format($orders->sum('profits'),2) }}</span>--}}
+{{--        </td>--}}
 
     </tr>
 
