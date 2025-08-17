@@ -51,6 +51,7 @@ class Transfer extends Model
         'geidea_commission',
         'geidea_percentage',
         'cart_type',
+        'paid_order',
     ];
     public function scopeOrder($query){
         return $query->orderBy('id', 'desc');

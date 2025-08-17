@@ -80,7 +80,8 @@ class CreditController extends Controller
         $request['userable_id'] = $this->user->id;
         $request['userable_type']=get_class($this->user);
         $request['pay_type']="online";
-        $request['confirm'] = 0;
+//        $request['confirm'] = 0;
+        $request['paid_order'] = "not_paid";
         $percentage = $this->user->geidea_percentage ? $this->user->geidea_percentage : settings()->geidea_percentage;
         $get_commission = $request->amount * $percentage;
 
@@ -107,7 +108,8 @@ class CreditController extends Controller
             return ApiController::respondWithError(trans('api.not_available'));
         }
         $transfer->update([
-            'confirm'=>1
+            'confirm'=>1,
+            'paid_order'=>"paid"
         ]);
 
         $statistics = \App\Models\Statistic::find(1);

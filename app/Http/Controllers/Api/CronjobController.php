@@ -9,6 +9,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Transfers\Entities\Transfer;
 
 class CronjobController extends Controller
 {
@@ -53,6 +54,17 @@ class CronjobController extends Controller
             // finally, cancel the parent order
             $order->update(['paid_order' => 'cancel']);
         }
+
+        // to cancel charge wallet not confirmed pay
+        $chargeWallet = Transfer::where('paid_order', 'not_paid')
+            ->where('type','recharge')
+//            ->whereDate('created_at', '>', '2025-02-06')
+            ->where('created_at', '<=', now()->subMinutes(10))
+            ->get();
+        foreach ($chargeWallet as $wallet) {
+            $wallet->update(['paid_order' => 'cancel']);
+        }
+
 
 //        $this->info('Cancellation completed for unpaid orders older than 10 minutes.');
     }
