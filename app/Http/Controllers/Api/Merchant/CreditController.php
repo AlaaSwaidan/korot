@@ -109,7 +109,9 @@ class CreditController extends Controller
         }
         $transfer->update([
             'confirm'=>1,
-            'paid_order'=>"paid"
+            'paid_order'=>"paid",
+            'transaction_id'=>$request->transaction_id,
+
         ]);
 
         $statistics = \App\Models\Statistic::find(1);
