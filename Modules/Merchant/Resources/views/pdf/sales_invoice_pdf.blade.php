@@ -101,7 +101,7 @@
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">#</th>
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">اسم المنتج - Product name</th>
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">الكمية - Quantity</th>
-        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">المبيعات - Sales</th>
+{{--        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">المبيعات - Sales</th>--}}
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة - Cost</th>
 {{--        <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">عمولة مدى - Mada Commision</th>--}}
         <th style="background-color:#eee;text-align: center;border:1px solid #dee2e6;">التكلفة الاجمالية - Total</th>
@@ -120,8 +120,8 @@
             <td style="border:1px solid #dee2e6;text-align:center;">{{ $i++ }}</td>
             <td style="border:1px solid #dee2e6;">{{ $order->company_name[app()->getLocale()].' - '.$order->package->category->name[app()->getLocale()].' - '.$order->name[app()->getLocale()] }}</td>
             <td style="border:1px solid #dee2e6;text-align:center;">{{ $order->total_count }}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->card_price,2) }}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->merchant_price,2) }}</td>
+{{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->card_price,2) }}</td>--}}
+            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->card_merchant_price,2) }}</td>
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->cost,2) }}</td>--}}
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->geidea_commission,2) }}</td>--}}
             <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->all_cost,2) }}</td>
@@ -136,9 +136,9 @@
         <td style="border:1px solid #dee2e6;text-align:center;">
             <span>{{ $orders->sum('total_count') }}</span>
         </td>
-        <td style="border:1px solid #dee2e6;text-align:center;">
-            <span>{{ number_format($orders->sum('card_price'),2)  }}</span>
-        </td>
+{{--        <td style="border:1px solid #dee2e6;text-align:center;">--}}
+{{--            <span>{{ number_format($orders->sum('card_price'),2)  }}</span>--}}
+{{--        </td>--}}
         <td style="border:1px solid #dee2e6;text-align:center;">
             <span>{{ number_format($orders->sum('merchant_price'),2)  }}</span>
         </td>
@@ -154,6 +154,31 @@
 
     </tr>
 
+
+
+
+
+        <tr>
+            <td   colspan="3"  class="border-right-0 border-bottom-0 border-top-0"></td>
+            <td style="border:1px solid #dee2e6;">اجمالي قبل الضريبة </td>
+            <td style="border:1px solid #dee2e6;text-align:left;">{{number_format($orders->sum('all_cost'),2) }}</td>
+        </tr>
+
+        <tr>
+            <td   colspan="3"  class="border-right-0 border-bottom-0 border-top-0"></td>
+            <td style="border:1px solid #dee2e6;">قيمة الخصم </td>
+            <td style="border:1px solid #dee2e6;text-align:left;">{{number_format(0,2) }}</td>
+        </tr>
+        <tr>
+            <td   colspan="3"  class="border-right-0 border-bottom-0 border-top-0"></td>
+            <td style="border:1px solid #dee2e6;">قيمة الضريبة المضافة </td>
+            <td style="border:1px solid #dee2e6;text-align:left;">{{number_format(0,2) }}</td>
+        </tr>
+        <tr>
+            <td   colspan="3"  class="border-right-0 border-bottom-0 border-top-0"></td>
+            <td style="border:1px solid #dee2e6;">الصافي بعد الضريبة </td>
+            <td style="border:1px solid #dee2e6;text-align:left;">{{number_format($orders->sum('all_cost'),2) }}</td>
+        </tr>
     </tbody>
 </table>
 <div style="clear:both;"></div>

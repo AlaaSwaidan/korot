@@ -219,11 +219,12 @@ $data->getCollection()->transform(function ($data) {
                 $commission = Transfer::whereOrderId($all_transactions->id)->first();
                 $merchant_price =$orders->sum('merchant_price');
                 $card_price =$orders->sum('card_price');
-                $geidea_commission =$commission->geidea_commission;
-                $all_cost =$commission->geidea_commission ? $commission->geidea_commission + $merchant_price : $merchant_price;
+                $geidea_commission =$commission ? $commission->geidea_commission : 0;
+                $all_cost =$geidea_commission ? $commission->geidea_commission + $merchant_price : $merchant_price;
                 $total =$orders->sum('card_price') - $merchant_price  - $geidea_commission;
                 $all_transactions['total_count']=$orders->count();
                 $all_transactions['merchant_price']=$merchant_price;
+                $all_transactions['card_merchant_price']=$all_transactions->merchant_price;
                 $all_transactions['card_price']=$card_price;
                 $all_transactions['profits']=($total);
                 $all_transactions['geidea_commission']=($geidea_commission);
