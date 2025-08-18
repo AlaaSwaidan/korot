@@ -224,7 +224,6 @@ $data->getCollection()->transform(function ($data) {
                 $total =$orders->sum('card_price') - $merchant_price  - $geidea_commission;
                 $all_transactions['total_count']=$orders->count();
                 $all_transactions['merchant_price']=$merchant_price;
-                $all_transactions['card_merchant_price']=$all_transactions->merchant_price;
                 $all_transactions['card_price']=$card_price;
                 $all_transactions['profits']=($total);
                 $all_transactions['geidea_commission']=($geidea_commission);

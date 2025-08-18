@@ -121,7 +121,7 @@
             <td style="border:1px solid #dee2e6;">{{ $order->company_name[app()->getLocale()].' - '.$order->package->category->name[app()->getLocale()].' - '.$order->name[app()->getLocale()] }}</td>
             <td style="border:1px solid #dee2e6;text-align:center;">{{ $order->total_count }}</td>
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->card_price,2) }}</td>--}}
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->card_merchant_price,2) }}</td>
+            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->merchant_price,2) }}</td>
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->cost,2) }}</td>--}}
 {{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->geidea_commission,2) }}</td>--}}
             <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->all_cost,2) }}</td>
