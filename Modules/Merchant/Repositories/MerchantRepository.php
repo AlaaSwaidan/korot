@@ -216,7 +216,13 @@ $data->getCollection()->transform(function ($data) {
                     ->where('paid_order',"paid")
                     ->where('merchant_id',$merchant->id)->where('package_id',$all_transactions->package_id)
                     ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate]);
+
                 $commission = Transfer::whereOrderId($all_transactions->id)->first();
+                // Access the original value of merchant_price before any changes.
+                $original_merchant_price = $all_transactions->getOriginal('merchant_price');
+
+                // You can use this original_merchant_price now instead of modified 'merchant_price'
+                $single_merchant_price = $original_merchant_price;
                 $merchant_price =$orders->sum('merchant_price');
                 $card_price =$orders->sum('card_price');
                 $geidea_commission =$commission ? $commission->geidea_commission : 0;
@@ -224,6 +230,7 @@ $data->getCollection()->transform(function ($data) {
                 $total =$orders->sum('card_price') - $merchant_price  - $geidea_commission;
                 $all_transactions['total_count']=$orders->count();
                 $all_transactions['merchant_price']=$merchant_price;
+                $all_transactions['single_merchant_price'] = $single_merchant_price;
                 $all_transactions['card_price']=$card_price;
                 $all_transactions['profits']=($total);
                 $all_transactions['geidea_commission']=($geidea_commission);
@@ -231,7 +238,6 @@ $data->getCollection()->transform(function ($data) {
                 return $all_transactions;
             });
             $qrcode= generateQrCode($all);
-
             $all_data=[
                 'user'=>$merchant,
                 'from_date'=>$request->from_date,
