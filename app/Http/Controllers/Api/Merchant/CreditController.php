@@ -104,7 +104,7 @@ class CreditController extends Controller
     }
     public function confirm_credit_online(ConfirmCreditOnlineRequest $request){
         $transfer = Transfer::find($request->transfer_id);
-        if ($transfer->pay_type != "online" || $transfer->confirm == 1){
+        if ($transfer->pay_type != "online" || $transfer->paid_order == "paid"){
             return ApiController::respondWithError(trans('api.not_available'));
         }
         $transfer->update([
