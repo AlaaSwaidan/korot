@@ -332,16 +332,74 @@ class CardController extends Controller
         $to_date = $request->to_date;
         return view('company::reports.sales_card_search',compact('data','to_date','from_date','companies','category_id','package_id','company_id'));
     }
-    public function saled_cards(Request $request){
-
-
-//        $imported = Order::where('parent_id','!=',null)->where('paid_order',"paid")->whereIn('cart_type',["imported","inserted",null]);
+//    public function saled_cards(Request $request){
+//
+//
+////        $imported = Order::where('parent_id','!=',null)->where('paid_order',"paid")->whereIn('cart_type',["imported","inserted",null]);
+//        // 1) Base query with general constraints
+//        $baseQuery = Order::query()
+//            ->whereNotNull('parent_id')
+//            ->where('paid_order', 'paid');
+//
+//// 2) Apply the date filter logic **once** in the base query
+//        if (!$request->from_date && !$request->to_date) {
+//            // current month
+//            $baseQuery->whereBetween('updated_at', [
+//                Carbon::now()->startOfMonth(),
+//                Carbon::now()->endOfMonth()
+//            ]);
+//        } elseif ($request->from_date && !$request->to_date) {
+//            // single day
+//            $baseQuery->whereDate('updated_at', $request->from_date);
+//        } elseif ($request->from_date && $request->to_date) {
+//            // date range
+//            $baseQuery->whereDate('updated_at', '>=', $request->from_date)
+//                ->whereDate('updated_at', '<=', $request->to_date);
+//        }
+//
+//// 3) Package filter
+//        if ($request->package_id) {
+//            $baseQuery->where('package_id', $request->package_id);
+//        }
+//
+//// 4) Now clone and apply specific cart_type filters
+//
+//// likecard
+//        $likecard = (clone $baseQuery)->where('cart_type', 'likecard');
+//        $likecard_price = $likecard->sum(DB::raw("COALESCE(card_price, 0)"));
+//        $likecard_merchant_price = $likecard->sum(DB::raw("COALESCE(merchant_price, 0)"));
+//        $likecard_cost = $likecard->sum(DB::raw("COALESCE(cost, 0)"));
+//        $likecard_profits = $likecard_merchant_price - $likecard_cost;
+//
+//// stc
+//        $stc = (clone $baseQuery)->where('cart_type', 'stc');
+//        $stc_price = $stc->sum(DB::raw("COALESCE(card_price, 0)"));
+//        $stc_merchant_price = $stc->sum(DB::raw("COALESCE(merchant_price, 0)"));
+//        $stc_cost = $stc->sum(DB::raw("COALESCE(cost, 0)"));
+//        $stc_profits = $stc_merchant_price - $stc_cost;
+//
+//// imported  (imported, inserted, or NULL)
+//        $imported = (clone $baseQuery)->where(function ($query) {
+//            $query->whereIn('cart_type', ["imported", "inserted"])
+//                ->orWhereNull('cart_type');
+//        });
+//        $imported_price = $imported->sum(DB::raw("COALESCE(card_price, 0)"));
+//        $imported_merchant_price = $imported->sum(DB::raw("COALESCE(merchant_price, 0)"));
+//        $imported_cost = $imported->sum(DB::raw("COALESCE(cost, 0)"));
+//        $imported_profits = $imported_merchant_price - $imported_cost;
+//        $from_date = $request->from_date;
+//        $to_date = $request->to_date;
+//        return view('company::saled.index',compact('likecard_price','likecard_merchant_price','stc_price','stc_merchant_price'
+//            ,'imported_price','imported_merchant_price','imported_profits','stc_profits','likecard_profits','to_date','from_date'));
+//    }
+    public function saled_cards(Request $request)
+    {
         // 1) Base query with general constraints
         $baseQuery = Order::query()
             ->whereNotNull('parent_id')
             ->where('paid_order', 'paid');
 
-// 2) Apply the date filter logic **once** in the base query
+        // 2) Apply the date filter logic **once** in the base query
         if (!$request->from_date && !$request->to_date) {
             // current month
             $baseQuery->whereBetween('updated_at', [
@@ -357,41 +415,44 @@ class CardController extends Controller
                 ->whereDate('updated_at', '<=', $request->to_date);
         }
 
-// 3) Package filter
+        // 3) Apply package filter if exists
         if ($request->package_id) {
             $baseQuery->where('package_id', $request->package_id);
         }
 
-// 4) Now clone and apply specific cart_type filters
+        // 4) Aggregate and filter by cart_type
+        $aggregates = $baseQuery->select(
+            DB::raw('
+            SUM(CASE WHEN cart_type = "likecard" THEN COALESCE(card_price, 0) ELSE 0 END) AS likecard_price,
+            SUM(CASE WHEN cart_type = "likecard" THEN COALESCE(merchant_price, 0) ELSE 0 END) AS likecard_merchant_price,
+            SUM(CASE WHEN cart_type = "likecard" THEN COALESCE(cost, 0) ELSE 0 END) AS likecard_cost,
+            SUM(CASE WHEN cart_type = "stc" THEN COALESCE(card_price, 0) ELSE 0 END) AS stc_price,
+            SUM(CASE WHEN cart_type = "stc" THEN COALESCE(merchant_price, 0) ELSE 0 END) AS stc_merchant_price,
+            SUM(CASE WHEN cart_type = "stc" THEN COALESCE(cost, 0) ELSE 0 END) AS stc_cost,
+            SUM(CASE WHEN cart_type IN ("imported", "inserted") OR cart_type IS NULL THEN COALESCE(card_price, 0) ELSE 0 END) AS imported_price,
+            SUM(CASE WHEN cart_type IN ("imported", "inserted") OR cart_type IS NULL THEN COALESCE(merchant_price, 0) ELSE 0 END) AS imported_merchant_price,
+            SUM(CASE WHEN cart_type IN ("imported", "inserted") OR cart_type IS NULL THEN COALESCE(cost, 0) ELSE 0 END) AS imported_cost
+        ')
+        )
+            ->first(); // Aggregating the sums in a single query
 
-// likecard
-        $likecard = (clone $baseQuery)->where('cart_type', 'likecard');
-        $likecard_price = $likecard->sum(DB::raw("COALESCE(card_price, 0)"));
-        $likecard_merchant_price = $likecard->sum(DB::raw("COALESCE(merchant_price, 0)"));
-        $likecard_cost = $likecard->sum(DB::raw("COALESCE(cost, 0)"));
-        $likecard_profits = $likecard_merchant_price - $likecard_cost;
+        // 5) Calculate profits
+        $aggregates->likecard_profits = $aggregates->likecard_merchant_price - $aggregates->likecard_cost;
+        $aggregates->stc_profits = $aggregates->stc_merchant_price - $aggregates->stc_cost;
+        $aggregates->imported_profits = $aggregates->imported_merchant_price - $aggregates->imported_cost;
 
-// stc
-        $stc = (clone $baseQuery)->where('cart_type', 'stc');
-        $stc_price = $stc->sum(DB::raw("COALESCE(card_price, 0)"));
-        $stc_merchant_price = $stc->sum(DB::raw("COALESCE(merchant_price, 0)"));
-        $stc_cost = $stc->sum(DB::raw("COALESCE(cost, 0)"));
-        $stc_profits = $stc_merchant_price - $stc_cost;
-
-// imported  (imported, inserted, or NULL)
-        $imported = (clone $baseQuery)->where(function ($query) {
-            $query->whereIn('cart_type', ["imported", "inserted"])
-                ->orWhereNull('cart_type');
-        });
-        $imported_price = $imported->sum(DB::raw("COALESCE(card_price, 0)"));
-        $imported_merchant_price = $imported->sum(DB::raw("COALESCE(merchant_price, 0)"));
-        $imported_cost = $imported->sum(DB::raw("COALESCE(cost, 0)"));
-        $imported_profits = $imported_merchant_price - $imported_cost;
+        // Get the request dates
         $from_date = $request->from_date;
         $to_date = $request->to_date;
-        return view('company::saled.index',compact('likecard_price','likecard_merchant_price','stc_price','stc_merchant_price'
-            ,'imported_price','imported_merchant_price','imported_profits','stc_profits','likecard_profits','to_date','from_date'));
+
+        // Return the results
+        return view('company::saled.index', compact(
+            'aggregates',
+            'from_date',
+            'to_date'
+        ));
     }
+
     public function search(Request $request){
 
         $card_name = $request->card_num;
