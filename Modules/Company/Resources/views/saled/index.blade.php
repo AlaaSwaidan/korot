@@ -67,7 +67,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($imported_price,2)  }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($aggregates->imported_price,2)  }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي مبيعات البطاقات المدخلة</span>
@@ -89,7 +89,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($likecard_price,2) }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($aggregates->likecard_price,2) }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي مبيعات البطاقات لايك كارد</span>
@@ -111,7 +111,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{  number_format($stc_price,2) }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{  number_format($aggregates->stc_price,2) }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي مبيعات STC</span>
@@ -136,7 +136,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($imported_merchant_price,2)  }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($aggregates->imported_merchant_price,2)  }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي مبيعات التجار البطاقات المدخلة</span>
@@ -158,7 +158,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($likecard_merchant_price,2) }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($aggregates->likecard_merchant_price,2) }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي مبيعات التجار البطاقات لايك كارد</span>
@@ -180,7 +180,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{  number_format($stc_merchant_price,2) }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{  number_format($aggregates->stc_merchant_price,2) }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي مبيعات التجار STC</span>
@@ -204,7 +204,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($imported_profits,2)  }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($aggregates->imported_profits,2)  }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي ارباح البطاقات المدخلة</span>
@@ -226,7 +226,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($likecard_profits,2) }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ number_format($aggregates->likecard_profits,2) }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي  ارباح  لايك كارد</span>
@@ -248,7 +248,7 @@
                             <!--begin::Title-->
                             <div class="card-title d-flex flex-column">
                                 <!--begin::Amount-->
-                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{  number_format($stc_profits,2) }}</span>
+                                <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{  number_format($aggregates->stc_profits,2) }}</span>
                                 <!--end::Amount-->
                                 <!--begin::Subtitle-->
                                 <span class="text-white opacity-75 pt-1 fw-semibold fs-6">اجمالي ارباح STC</span>
