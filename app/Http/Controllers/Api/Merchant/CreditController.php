@@ -148,7 +148,7 @@ class CreditController extends Controller
         sendMobileNotification($this->user->id,get_class($this->user),title_notifications('recharge_online'),messages_notifications('recharge_online',$request->amount),6,null);
         saveNotification('6', serialize(title_notifications('recharge_online')) , serialize(messages_notifications('recharge_online',$request->amount)),$this->user->id,get_class($this->user));
 
-        return response()->json(['success'=> true,'status' =>  http_response_code() , 'data'=>$data , 'message'=>trans('api.charge_balance_successfuly',['balance'=>number_format($request->amount,2),'geadia'=> $transfer->geidea_percentage ,'old'=> number_format($old_balance,2), 'new'=>number_format($this->user->balance,2) ])])->setStatusCode(200);
+        return response()->json(['success'=> true,'status' =>  http_response_code() , 'data'=>$data , 'message'=>trans('api.charge_balance_successfuly',['balance'=>number_format($wallet->balance,2),'geadia'=> $transfer->geidea_percentage ,'old'=> number_format($old_balance,2), 'new'=>number_format($this->user->balance,2) ])])->setStatusCode(200);
 
     }
     public function buy_credit_online(BuyCreditOnlineRequest $request){
