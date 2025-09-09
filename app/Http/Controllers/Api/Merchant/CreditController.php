@@ -82,6 +82,7 @@ class CreditController extends Controller
         $request['pay_type']="online";
 //        $request['confirm'] = 0;
         $request['paid_order'] = "not_paid";
+        $request['transaction_id'] = $request->transaction_id;
         $percentage = $this->user->geidea_percentage ? $this->user->geidea_percentage : settings()->geidea_percentage;
         $get_commission = $request->amount * $percentage;
 

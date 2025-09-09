@@ -24,6 +24,7 @@ class CreditTransactionsResource extends JsonResource
             'amount'                 => $this->amount ,
 //            'confirm'                 => $this->confirm ,
             'paid_order'                 => $this->paid_order ,
+            'transaction_id'                 => $this->transaction_id ,
             'geidea_percentage'                 => $this->geidea_percentage ,
             'geidea_commission'                 => $this->geidea_commission ,
             'type'            => getPayType( $this->pay_type) ,

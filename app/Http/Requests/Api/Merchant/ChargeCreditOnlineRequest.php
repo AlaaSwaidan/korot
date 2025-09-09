@@ -26,6 +26,7 @@ class ChargeCreditOnlineRequest extends REQUEST_API_PARENT
     {
         return [
             'amount' =>'required|numeric',
+            'transaction_id' =>'required',
 
         ];
     }
