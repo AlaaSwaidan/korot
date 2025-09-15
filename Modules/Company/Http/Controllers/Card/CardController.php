@@ -266,7 +266,7 @@ class CardController extends Controller
         SUM(CASE WHEN sold = 1 THEN packages.cost ELSE 0 END) as total_sold_cost,
 
         -- Total card price of sold cards
-        SUM(CASE WHEN sold = 1 AND DATE(cards.updated_at) = CURDATE() THEN packages.card_price ELSE 0 END) as total_card_price,
+        SUM(CASE WHEN sold = 1 THEN packages.card_price ELSE 0 END) as total_card_price,
 
         MAX(cards.id) as max_id
     ")
