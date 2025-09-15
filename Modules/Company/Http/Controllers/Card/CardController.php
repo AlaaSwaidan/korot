@@ -293,8 +293,13 @@ class CardController extends Controller
         // Get the companies
         $companies = Store::Order()->Main()->get();
 
+        $category_id = $request->category_id;
+        $package_id = $request->package_id;
+        $company_id = $request->company_id;
+        $from_date = $request->from_date;
+        $to_date = $request->to_date;
         // Pass data to the view
-        return view('company::reports.sales_card', compact('data', 'companies', 'request'));
+        return view('company::reports.sales_card',compact('data','to_date','from_date','companies','category_id','package_id','company_id'));
     }
 
     public function reports_sales_cards_search(Request $request){
