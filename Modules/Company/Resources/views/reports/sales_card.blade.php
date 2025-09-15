@@ -75,9 +75,10 @@
 
                             <th >#</th>
                             <th >الفئة</th>
-                            <th >مبيعات اليوم</th>
-                            <th >مبيعات الاسبوع</th>
-                            <th >مبيعات الشهر</th>
+                            <th > عدد مبيعات اليوم</th>
+                            <th >عدد مبيعات الاسبوع</th>
+                            <th >عدد مبيعات الشهر</th>
+                            <th >اجمالي مبيعات اليوم</th>
                             <th >المتبقي</th>
 
 
@@ -105,6 +106,9 @@
                                 </td>
                                 <td>
                                     <div class="badge badge-light-info">  {{ $value->sold_per_week }}</div>
+                                </td>
+                                <td>
+                                    <div class="badge badge-light-info">  {{ $value->total_card_price . $value->updated_at }}</div>
                                 </td>
                                 <td>
                                     <div class="badge badge-light-info">  {{ $value->total_unsold }}</div>
