@@ -108,7 +108,7 @@
                                     <div class="badge badge-light-info">  {{ $value->sold_per_week }}</div>
                                 </td>
                                 <td>
-                                    <div class="badge badge-light-info">  {{ $value->total_card_price . $value->updated_at }}</div>
+                                    <div class="badge badge-light-info">  {{ $value->total_card_price_range ? $value->total_card_price_range :  $value->total_card_price_today }}</div>
                                 </td>
                                 <td>
                                     <div class="badge badge-light-info">  {{ $value->total_unsold }}</div>

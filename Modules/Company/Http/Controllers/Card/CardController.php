@@ -220,70 +220,83 @@ class CardController extends Controller
         $url = route('admin.duplicated-cards.index','?category_id='.$category_id.'&package_id='.$package_id.'&company_id='.$company_id.'&from_date='.$from_date.'&to_date='.$to_date);
         return view('company::reports.index',compact('duplicated_count','url','data','imported_count','to_date','from_date','companies','category_id','package_id','company_id'));
     }
-    public function reports_sales_cards(Request $request){
-
+    public function reports_sales_cards(Request $request)
+    {
+        // Initialize the query for cards
         $cards = Card::query();
-        if($request->from_date && $request->to_date == null){
-            $cards = $cards->whereDate('cards.updated_at',$request->from_date);
-        }if($request->from_date && $request->to_date){
+
+        // Handle filtering by date
+        if ($request->from_date && $request->to_date == null) {
+            $cards = $cards->whereDate('cards.updated_at', $request->from_date);
+        }
+
+        if ($request->from_date && $request->to_date) {
             $cards = $cards->whereBetween(DB::raw('DATE(cards.updated_at)'), [$request->from_date, $request->to_date]);
         }
-        if($request->package_id){
-            $cards = $cards->where('cards.package_id',$request->package_id);
-        }
-        if ($request->company_id && $request->category_id == null && $request->package_id == null ){
-            $stores = Store::where('id',$request->company_id)->pluck('id')->toArray();
-            $categories = Store::where('parent_id',$stores)->pluck('id')->toArray();
-            $packages = Package::whereIn('store_id',$categories)->orderBy('id','desc')->pluck('id')->toArray();
-            $cards = $cards->whereIn('cards.package_id',$packages);
-        }
-        if ($request->company_id && $request->category_id && $request->package_id == null ){
-            $categories = Store::where('id',$request->category_id)->pluck('id')->toArray();
-            $packages = Package::whereIn('store_id',$categories)->orderBy('id','desc')->pluck('id')->toArray();
-            $cards = $cards->whereIn('cards.package_id',$packages);
+
+        // Filter by package_id
+        if ($request->package_id) {
+            $cards = $cards->where('cards.package_id', $request->package_id);
         }
 
+        // Handle filtering by company and category if necessary
+        if ($request->company_id && $request->category_id == null && $request->package_id == null) {
+            $stores = Store::where('id', $request->company_id)->pluck('id')->toArray();
+            $categories = Store::where('parent_id', $stores)->pluck('id')->toArray();
+            $packages = Package::whereIn('store_id', $categories)->orderBy('id', 'desc')->pluck('id')->toArray();
+            $cards = $cards->whereIn('cards.package_id', $packages);
+        }
+
+        if ($request->company_id && $request->category_id && $request->package_id == null) {
+            $categories = Store::where('id', $request->category_id)->pluck('id')->toArray();
+            $packages = Package::whereIn('store_id', $categories)->orderBy('id', 'desc')->pluck('id')->toArray();
+            $cards = $cards->whereIn('cards.package_id', $packages);
+        }
+
+        // Query for the sales data
         $data = $cards
             ->join('packages', 'cards.package_id', '=', 'packages.id')
-                 ->selectRaw("
-        cards.package_id,
-        COUNT(cards.id) as total_cards,
+            ->selectRaw("
+            cards.package_id,
+            COUNT(cards.id) as total_cards,
 
-        -- Sold cards per day
-        COUNT(CASE WHEN sold = 1 AND DATE(cards.updated_at) = CURDATE() THEN 1 ELSE NULL END) as sold_per_day,
+            -- Sold cards per day
+            COUNT(CASE WHEN sold = 1 AND DATE(cards.updated_at) = CURDATE() THEN 1 ELSE NULL END) as sold_per_day,
 
-        -- Sold cards per week
-        COUNT(CASE WHEN sold = 1 AND YEARWEEK(cards.updated_at, 1) = YEARWEEK(CURDATE(), 1) THEN 1 ELSE NULL END) as sold_per_week,
+            -- Sold cards per week
+            COUNT(CASE WHEN sold = 1 AND YEARWEEK(cards.updated_at, 1) = YEARWEEK(CURDATE(), 1) THEN 1 ELSE NULL END) as sold_per_week,
 
-        -- Sold cards per month
-        COUNT(CASE WHEN sold = 1 AND MONTH(cards.updated_at) = MONTH(CURDATE()) AND YEAR(cards.updated_at) = YEAR(CURDATE()) THEN 1 ELSE NULL END) as sold_per_week,
+            -- Sold cards per month
+            COUNT(CASE WHEN sold = 1 AND MONTH(cards.updated_at) = MONTH(CURDATE()) AND YEAR(cards.updated_at) = YEAR(CURDATE()) THEN 1 ELSE NULL END) as sold_per_month,
 
-    -- Total unsold cards (independent of date filter)
-        (SELECT COUNT(*) FROM cards AS unsold_cards WHERE unsold_cards.package_id = cards.package_id AND unsold_cards.sold = 0) as total_unsold,
+            -- Total unsold cards (independent of date filter)
+            (SELECT COUNT(*) FROM cards AS unsold_cards WHERE unsold_cards.package_id = cards.package_id AND unsold_cards.sold = 0) as total_unsold,
 
+            -- Total cost of sold cards (for today or given date range)
+            SUM(CASE WHEN sold = 1 AND DATE(cards.updated_at) = CURDATE() THEN packages.cost ELSE 0 END) as total_sold_cost_today,
 
-        -- Total cost of sold cards
-        SUM(CASE WHEN sold = 1 THEN packages.cost ELSE 0 END) as total_sold_cost,
+            -- Total card price of sold cards (for today or given date range)
+            SUM(CASE WHEN sold = 1 AND DATE(cards.updated_at) = CURDATE() THEN packages.card_price ELSE 0 END) as total_card_price_today,
 
-        -- Total card price of sold cards
-        SUM(CASE WHEN sold = 1 THEN packages.card_price ELSE 0 END) as total_card_price,
+            -- Total cost of sold cards in the date range
+            SUM(CASE WHEN sold = 1 AND DATE(cards.updated_at) BETWEEN ? AND ? THEN packages.cost ELSE 0 END) as total_sold_cost_range,
 
-        MAX(cards.id) as max_id
-    ")
-                 ->groupBy('cards.package_id')
-                 ->orderBy('max_id', 'DESC')
-                 ->get();
+            -- Total card price of sold cards in the date range
+            SUM(CASE WHEN sold = 1 AND DATE(cards.updated_at) BETWEEN ? AND ? THEN packages.card_price ELSE 0 END) as total_card_price_range,
 
+            MAX(cards.id) as max_id
+        ", [$request->from_date, $request->to_date, $request->from_date, $request->to_date])
+            ->groupBy('cards.package_id')
+            ->orderBy('max_id', 'DESC')
+            ->get();
+
+        // Get the companies
         $companies = Store::Order()->Main()->get();
 
-        $category_id = $request->category_id;
-        $package_id = $request->package_id;
-        $company_id = $request->company_id;
-        $from_date = $request->from_date;
-        $to_date = $request->to_date;
-        return view('company::reports.sales_card',compact('data','to_date','from_date','companies','category_id','package_id','company_id'));
-
+        // Pass data to the view
+        return view('company::reports.sales_card', compact('data', 'companies', 'request'));
     }
+
     public function reports_sales_cards_search(Request $request){
 
         $cards = Card::query();
