@@ -107,6 +107,21 @@
     </div>
     <!--end::Card-->
 </form>
+<form action="{{route('admin.reports.sales-cards-reports-excel')}}" method="post" >
+    @csrf
+
+    <button type="submit"  class="btn btn-success disabledbutton">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+        <i class="fas fa-file-excel"></i>
+        <!--end::Svg Icon-->
+    </button>
+    <input type="hidden" name="category_id" value="{{ isset($category_id)? $category_id : null }}">
+    <input type="hidden" name="package_id" value="{{ isset($package_id)? $package_id : null }}">
+    <input type="hidden" name="company_id" value="{{ isset($company_id)? $company_id : null }}">
+    <input type="hidden" name="from_date" value="{{ isset($from_date)? $from_date : null }}">
+    <input type="hidden" name="to_date" value="{{ isset($to_date)? $to_date : null }}">
+</form>
+
 <!--end::Form-->
 {{--<form action="{{route('admin.sold-cards.transaction-excel')}}" method="post" style="margin-bottom: 10px;">--}}
 {{--    @csrf--}}

@@ -51,6 +51,9 @@ Route::get( '/reports-cards/index', [CardController::class,"reports_cards"])->na
 Route::get( '/reports-sales-cards/index', [CardController::class,"reports_sales_cards"])->name('reports-sales-cards.index');
 Route::get( '/reports-sales-cards/search', [CardController::class,"reports_sales_cards_search"])->name('reports-sales-cards.search');
 Route::post( '/reports/cards-reports-excel', [CardController::class,"cards_excel"])->name('reports.cards-reports-excel');
+Route::post( '/reports/sales-cards-reports-excel', [CardController::class,"reports_excel"])->name('reports.sales-cards-reports-excel');
+
+
 
 Route::resource('{package}/cards', CardController::class, ['except' => ['destroy','edit','update']]);
 Route::get( '/cards/search/{package}', [CardController::class,"search_card"])->name('cards.search');//export cards

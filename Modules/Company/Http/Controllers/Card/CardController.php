@@ -6,6 +6,9 @@ use App\Exports\CardExport;
 use App\Exports\CardTransactionExport;
 use App\Exports\CollectionExport;
 use App\Exports\ImportedCardExport;
+use App\Exports\OrderProductExport;
+use App\Exports\ProductExport;
+use App\Exports\SalesCardsExport;
 use App\Imports\CardsImport;
 use App\Models\Card;
 use App\Models\DuplicatedCard;
@@ -301,7 +304,10 @@ class CardController extends Controller
         // Pass data to the view
         return view('company::reports.sales_card',compact('data','to_date','from_date','companies','category_id','package_id','company_id'));
     }
+    public function reports_excel(Request $request){
 
+        return Excel::download(new SalesCardsExport($request), 'reports_cards_'.randNumber(4)."."."xlsx");
+    }
     public function reports_sales_cards_search(Request $request){
 
         $cards = Card::query();
