@@ -41,7 +41,7 @@ class HomeController extends Controller
     public function home() {
 
         $admins= Admin::count();
-     
+
 
         //Optimization
 

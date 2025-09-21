@@ -41,7 +41,7 @@ class TransferObserver
                 'not_api_card_sold'=> isset($not_api_card_sold) ? $not_api_card_sold :$statistics->not_api_card_sold,
                 'api_card_sold'=> isset($api_card_sold) ? $api_card_sold :$statistics->api_card_sold,
                 'total_card_sold' => 1 + $statistics->total_card_sold,
-                'card_numbers'=>$statistics->card_numbers - 1,
+                'card_numbers'=>$transfer->api_linked == 1  ? $statistics->card_numbers :  $statistics->card_numbers - 1,
                 'total_cost'=>$statistics->total_cost + $transfer->order->cost,
                 'api_card_cost'=>isset($api_card_cost) ? $api_card_cost :$statistics->api_card_cost,
                 'not_api_card_cost'=>isset($not_api_card_cost) ? $not_api_card_cost :$statistics->not_api_card_cost,
@@ -130,15 +130,11 @@ class TransferObserver
                     ]);
             }
         }
-        elseif (in_array($transfer->type,['transfer','repayment','profits','recharge','sales'])){
+        elseif (in_array($transfer->type,['transfer','repayment','profits','recharge'])){
             if($transfer->confirm == 1){
                 if ( $transfer->userable_type == "App\Models\Merchant"){
-                    if ($transfer->type == "sales"){
-                        $statistics->update([
-                            'merchants_balance'=>$statistics->merchants_balance + $transfer->profits,
-                        ]);
-                    }else{
-                        if ($transfer->pay_type == "online"){
+
+                        if ($transfer->type == "recharge" && $transfer->pay_type == "online"){
                             $merchant = Merchant::find($transfer->userable_id);
                             $percentage = $merchant->geidea_percentage ? $merchant->geidea_percentage : settings()->geidea_percentage;
                             $get_commission = $transfer->amount * $percentage ;
@@ -146,35 +142,27 @@ class TransferObserver
                             $statistics->update([
                                 'merchants_balance'=>$statistics->merchants_balance + $result,
                             ]);
-                        }else{
+                        }elseif($transfer->type == "transfer" || $transfer->type =="repayment" || $transfer->type =="profits"){
                             $statistics->update([
                                 'merchants_balance'=>$statistics->merchants_balance + $transfer->amount,
                             ]);
                         }
 
-                    }
+
                 }
                 elseif($transfer->userable_type == "App\Models\Distributor"){
-                    if ($transfer->type == "sales"){
+
                         $statistics->update([
-                            'distributors_balance'=>$statistics->distributors_balance + $transfer->profits,
+                            'distributors_balance' => $statistics->distributors_balance + $transfer->amount,
                         ]);
-                    }else{
-                        $statistics->update([
-                            'distributors_balance'=>$statistics->distributors_balance + $transfer->amount,
-                        ]);
-                    }
+
                 }
                 elseif($transfer->userable_type == "App\Models\Admin"){
-                    if ($transfer->type == "sales"){
-                        $statistics->update([
-                            'admins_balance'=>$statistics->admins_balance + $transfer->profits,
-                        ]);
-                    }else{
+
                         $statistics->update([
                             'admins_balance'=>$statistics->admins_balance + $transfer->amount,
                         ]);
-                    }
+
                 }
                 /*  transfers  */
                 if ($transfer->type == "transfer"){

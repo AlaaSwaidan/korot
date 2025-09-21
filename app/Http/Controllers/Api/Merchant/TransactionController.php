@@ -23,7 +23,10 @@ class TransactionController extends Controller
          return ApiController::respondWithSuccess($data);
     }
     public function all_transactions(Request $request){
-         $transaction =$this->user->userable()->where('confirm',1)->Order();
+         $transaction = $this->user->userable()
+             ->whereIn('paid_order','paid')
+             ->where('confirm', 1)
+             ->orderBy('id', 'desc');
         if ($request->type == "week"){
             $transaction = $transaction->whereBetween('created_at',
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]

@@ -146,7 +146,10 @@ class MerchantController extends Controller
     }
     public function processes(Merchant $merchant)
     {
-        $data =$merchant->userable()->Order()->paginate(20)->appends(request()->except('page'));
+        $data =$merchant->userable()
+            ->where('paid_order','paid')
+            ->Order()->paginate(20)->appends(request()->except('page'));
+
         return view('merchant::merchants.processes',compact('merchant','data'));
     }
     public function accounts(Request $request,Merchant $merchant)
