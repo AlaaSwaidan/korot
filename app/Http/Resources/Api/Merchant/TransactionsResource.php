@@ -22,12 +22,7 @@ class TransactionsResource extends JsonResource
             'balance' => number_format($this->balance,2),
             'indebtedness' => number_format($this->indebtedness,2),
             'date' => $this->created_at->locale(app()->getLocale())->isoFormat('Do MMM, Y ,h:mm A') ,
-            'transactions'                 => AllTransactionsResource::collection(
-                $this->user->userable()
-                    ->whereIn('paid_order','paid')
-                    ->where('confirm', 1)
-                    ->orderBy('id', 'desc')
-                ->take(10)->get()),
+            'transactions'                 => AllTransactionsResource::collection($this->userable()->Order()->where('paid_order','paid')->where('confirm',1)->take(10)->get()),
 
         ];
 

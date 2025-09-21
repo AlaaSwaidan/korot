@@ -42,7 +42,6 @@ class HomeController extends Controller
 
         $admins= Admin::count();
 
-
         //Optimization
 
         $merchantStats = Merchant::selectRaw('
