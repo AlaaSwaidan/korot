@@ -24,7 +24,7 @@ class TransactionController extends Controller
     }
     public function all_transactions(Request $request){
          $transaction = $this->user->userable()
-             ->whereIn('paid_order','paid')
+             ->where('paid_order','paid')
              ->where('confirm', 1)
              ->orderBy('id', 'desc');
         if ($request->type == "week"){
