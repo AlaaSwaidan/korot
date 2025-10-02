@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 
 
+use App\Exports\WalletsExport;
 use App\Http\Resources\Api\Merchant\MyOrderResource;
 use App\Models\Card;
 use App\Models\Distributor;
@@ -12,6 +13,7 @@ use App\Models\Order;
 use App\Models\UserDevice;
 use App\Models\UserToken;
 use App\Http\Controllers\Controller;
+use App\Models\Wallet;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +21,7 @@ use Modules\Transfers\Entities\Transfer;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 use Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ApiController extends Controller
 {
@@ -30,13 +33,22 @@ class ApiController extends Controller
     }
 
     public function my_orders(Request $request){
-        $ids = Card::where('sold',0)->pluck('serial_number')->toArray();
-        $cards= Order::where('paid_order','paid')->whereIn('serial_number',$ids)->get();
-//20404749909514   card_number
-dd($cards);
-        return ApiController::respondWithSuccess($cards);
+//        $ids = Wallet::whereBetween(DB::raw('DATE(created_at)'), ["2025-01-01", "2025-10-30"])->get();
+        return Excel::download(new WalletsExport(), 'wallet_report.xlsx');
+//        $wallets = DB::table('wallets')
+//            ->join('transfers', 'wallets.transfer_id', '=', 'transfers.id')
+//            ->join('merchants', 'wallets.merchant_id', '=', 'merchants.id')
+//            ->whereBetween(DB::raw('DATE(wallets.created_at)'), ['2025-09-01', '2025-10-30'])
+//            ->whereColumn('wallets.balance', 'transfers.amount')
+//            ->select('merchants.name as user_name', 'wallets.balance as wallet_balance', 'merchants.balance as current_balance')
+//            ->get();
 
-//        OrderResource::collection($orders);
+        Excel::create('wallet_report', function($excel) use ($wallets) {
+            $excel->sheet('Sheet 1', function($sheet) use ($wallets) {
+                $sheet->fromArray($wallets);
+            });
+        })->download('xlsx');
+        dd($wallets);
         return ApiController::respondWithSuccess($orders);
 
     }
