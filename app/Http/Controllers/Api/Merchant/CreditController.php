@@ -123,14 +123,14 @@ class CreditController extends Controller
         $wallet = Wallet::create([
             'transfer_id'=>$transfer->id,
             'merchant_id'=>$this->user->id,
-            'balance'=>$transfer->amount,
+            'balance'=> $transfer->amount -  $transfer->geidea_commission,
             'previous_balance'=>$this->user->balance,
-            'current_balance'=>$this->user->balance + $transfer->amount,
+            'current_balance'=>$this->user->balance + ($transfer->amount -  $transfer->geidea_commission),
             'date'=>Carbon::now(),
         ]);
         $old_balance =$this->user->balance;
         $this->user->update([
-            'balance'=>$this->user->balance + $transfer->amount,
+            'balance'=>$this->user->balance + ($transfer->amount -  $transfer->geidea_commission),
         ]);
 
         /*محفظة جيديا */
