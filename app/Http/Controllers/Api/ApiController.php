@@ -33,6 +33,31 @@ class ApiController extends Controller
     }
 
     public function my_orders(Request $request){
+
+
+//           $wallets = Wallet::with('merchant', 'transfer')
+//             ->whereHas('transfer', function($q){
+//                 $q->whereColumn('wallets.balance', 'transfers.amount');
+//             })
+//             ->whereBetween(DB::raw('DATE(wallets.created_at)'), ['2025-08-01', '2025-08-31'])
+//             ->get();
+// //        dd($wallets);
+
+//         foreach ($wallets as $wallet) {
+//             $geideaCommission = $wallet->transfer->geidea_commission;
+
+//             // Update wallet balances
+//             $wallet->balance -= $geideaCommission;
+//             $wallet->current_balance -= $geideaCommission;
+//             $wallet->save();
+
+//             // Update merchant balance
+//             $wallet->merchant->decrement('balance', $geideaCommission);
+//             $wallet->transfer->decrement('balance_total', $geideaCommission);
+//         }
+//             dd('done');
+
+
 //        $ids = Wallet::whereBetween(DB::raw('DATE(created_at)'), ["2025-01-01", "2025-10-30"])->get();
         return Excel::download(new WalletsExport(), 'wallet_report.xlsx');
 //        $wallets = DB::table('wallets')
@@ -118,7 +143,7 @@ class ApiController extends Controller
             'device_id' => $device_id,
             'access_token' => $token
         ]);
-     return $token;
+        return $token;
 
     }
 
