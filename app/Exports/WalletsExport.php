@@ -19,13 +19,14 @@ class WalletsExport implements FromCollection, WithHeadings
                 'merchants.id as user_id',
                 'merchants.name as user_name',
                 'wallets.balance as wallet_balance',
-                'merchants.balance as current_balance'
+                'merchants.balance as current_balance',
+                'wallets.created_at as created_at',
             )
             ->get();
     }
 
     public function headings(): array
     {
-        return ['رقم التاجر','اسم التاجر', 'المبلغ', 'الرصيد الحالي'];
+        return ['رقم التاجر','اسم التاجر', 'المبلغ', 'الرصيد الحالي','تاريخ الشحن'];
     }
 }
