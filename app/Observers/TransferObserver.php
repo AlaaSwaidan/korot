@@ -58,7 +58,7 @@ class TransferObserver
             if ( $transfer->userable_type == "App\Models\Merchant"){
                 if ($transfer->order->payment_method == "wallet"){
                     $statistics->update([
-                        'merchants_balance'=>$statistics->merchants_balance - $transfer->amount,
+//                        'merchants_balance'=>$statistics->merchants_balance - $transfer->amount,
                     ]);
                 }
 
@@ -116,7 +116,7 @@ class TransferObserver
             ]);
             if ( $transfer->userable_type == "App\Models\Merchant"){
                  $statistics->update([
-                        'merchants_balance'=>$statistics->merchants_balance + $transfer->amount,
+//                        'merchants_balance'=>$statistics->merchants_balance + $transfer->amount,
                     ]);
 
             }elseif($transfer->userable_type == "App\Models\Distributor"){
@@ -140,11 +140,11 @@ class TransferObserver
                             $get_commission = $transfer->amount * $percentage ;
                             $result = ($transfer->amount) - $get_commission;
                             $statistics->update([
-                                'merchants_balance'=>$statistics->merchants_balance + $result,
+//                                'merchants_balance'=>$statistics->merchants_balance + $result,
                             ]);
                         }elseif($transfer->type == "transfer" || $transfer->type =="repayment" || $transfer->type =="profits"){
                             $statistics->update([
-                                'merchants_balance'=>$statistics->merchants_balance + $transfer->amount,
+//                                'merchants_balance'=>$statistics->merchants_balance + $transfer->amount,
                             ]);
                         }
 
@@ -168,7 +168,7 @@ class TransferObserver
                 if ($transfer->type == "transfer"){
                     if ($transfer->providerable_type == "App\Models\Merchant"){
                         $statistics->update([
-                            'merchants_balance'=>$statistics->merchants_balance - $transfer->amount,
+//                            'merchants_balance'=>$statistics->merchants_balance - $transfer->amount,
                         ]);
                     }elseif ($transfer->providerable_type == "App\Models\Distributor"){
                         $statistics->update([

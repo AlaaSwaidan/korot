@@ -91,6 +91,9 @@ class HomeController extends Controller
             ->groupBy('merchant_id')
             ->havingRaw('SUM(count) <= ?', [$settings->transaction_lowest_count])
             ->count(DB::raw('DISTINCT merchant_id'));
+        $merchantsBalance = Merchant::query()->sum('balance');
+        $statistics ->update(['merchants_balance' => $merchantsBalance]);
+        $statistics->refresh();
 
 //        $most_merchants_sellers = Order::whereNotNull('parent_id')
 //            ->whereHas('merchant', function ($q) {
