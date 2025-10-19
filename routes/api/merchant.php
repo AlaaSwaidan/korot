@@ -75,7 +75,7 @@ Route::namespace('Api')->middleware(['Lang'])->group( function () {
         Route::get( '/order-details/{id}', [OrderController::class,"order_details"]);
         Route::get( '/statistics', [StatisticController::class,"statistics"]);
         Route::get( '/merchant-reports', [StatisticController::class,"merchant_reports"]);
-        Route::post( '/pay-zain', [ZainIntegrationController::class,"topUp"]);
+        Route::post( '/pay-zain', [ZainIntegrationController::class,"pinPrinting"]);
 
     });
 

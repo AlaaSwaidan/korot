@@ -26,6 +26,8 @@ class PackageRequest extends FormRequest
                 'card_price'              => 'required|numeric',
                 'cost'              => 'required|numeric',
                 'barcode'              => 'required|unique:packages,barcode,'.$this->package->id,
+                'price_zain'              => 'required_if:zain_status,1|nullable|numeric',
+                'product_id_zain'              => 'required_if:zain_status,1|nullable|string',
             ];
         }
 
@@ -40,6 +42,8 @@ class PackageRequest extends FormRequest
             'arrangement'              => 'required|numeric',
             'card_price'              => 'required|numeric',
             'cost'              => 'required|numeric',
+            'price_zain'              => 'required_if:zain_status,1|nullable|numeric',
+            'product_id_zain'              => 'required_if:zain_status,1|nullable|string',
             'barcode'              => 'required|unique:packages,barcode',
         ];
     }

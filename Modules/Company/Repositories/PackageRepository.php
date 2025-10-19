@@ -23,6 +23,7 @@ class PackageRepository
             $request['status'] = isset($request->status) ? $request->status : 0;
             $request['gencode_like_card_status'] = isset($request->gencode_like_card_status) ? $request->gencode_like_card_status : 0;
             $request['gencode_status'] = isset($request->gencode_status) ? $request->gencode_status : 0;
+            $request['zain_status'] = isset($request->zain_status) ? $request->zain_status : 0;
             $package = Package::create($request->all());
 
             foreach ($request->type as $key => $value){
@@ -47,6 +48,7 @@ class PackageRepository
             $request['status'] = isset($request->status) ? $request->status : 0;
             $request['gencode_like_card_status'] = isset($request->gencode_like_card_status) ? $request->gencode_like_card_status : 0;
             $request['gencode_status'] = isset($request->gencode_status) ? $request->gencode_status : 0;
+            $request['zain_status'] = isset($request->zain_status) ? $request->zain_status : 0;
             $updated = $package->update($request->all());
 
             PackagePrice::where('package_id',$package->id)->delete();

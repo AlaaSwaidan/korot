@@ -25,6 +25,9 @@ class Package extends Model
         'gencode_like_card_status',
         'gencode_status',
         'barcode',
+        'zain_status',
+        'price_zain',
+        'product_id_zain',
     ];
     protected $casts=[
         'name'=>'json',

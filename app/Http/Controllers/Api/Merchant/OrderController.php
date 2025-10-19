@@ -15,6 +15,7 @@ use App\Mail\SendAdminMail;
 use App\Models\Card;
 use App\Models\Order;
 use App\Models\Package;
+use App\Services\ZainService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -68,6 +69,7 @@ class OrderController extends Controller
             DB::beginTransaction();
             $package = Package::find($request->package_id);
           $card = $package->cards()->where('sold',0)->lockForUpdate()->get();
+
           if ($package->gencode != null && $package->gencode_status == 1  && $card->count() == 0){
 
              //api_linked for transfers table and orders
@@ -112,6 +114,32 @@ class OrderController extends Controller
               else  if ($request->payment_method == "online"){
                   //api_linked for transfers table and orders
                   $get_return_data = create_order($package->gencode_like_card,$request->count,$package,$this->user,"online",$request->transaction_id);
+                  if ($get_return_data == "error"){
+                      return ApiController::respondWithError(trans('api.error_order'));
+
+                  }else{
+                      return $get_return_data;
+                  }
+              }
+
+          }
+          elseif ($package->product_id_zain != null && $package->zain_status == 1  && $card->where('sold',0)->count() == 0){
+
+             //api_linked for transfers table and orders
+              if ($request->payment_method == "wallet"){
+                  $result = $this->check_balance($this->user , $request->count , $package);
+                  if ($result == 0) return ApiController::respondWithError(trans('api.Your_balance_is_not_enough'));
+                  $get_return_data =  self::pinPrinting($package->product_id_zain,$request->count,$package,$this->user,$request->payment_method);
+                  if ($get_return_data == "error"){
+                      return ApiController::respondWithError(trans('api.error_order'));
+
+                  }else{
+                      return $get_return_data;
+                  }
+              }
+              else  if ($request->payment_method == "online"){
+                  //api_linked for transfers table and orders
+                  $get_return_data = self::pinPrinting($package->gencode_like_card,$request->count,$package,$this->user,"online",$request->transaction_id);
                   if ($get_return_data == "error"){
                       return ApiController::respondWithError(trans('api.error_order'));
 
@@ -419,4 +447,161 @@ class OrderController extends Controller
         }
         return 1;
     }
+
+/* zain order*/
+    public static function pinPrinting($product_id_zain,$count,$package,$user,$payment_method, $transaction_id = null )
+    {
+        $productId = $product_id_zain; // 30 SAR voucher
+        $amount = $package->price_zain * 100 ; // 30 SAR × 100
+        $cashier = \request()->input('cashier', 'Ahmed');
+        $results = [];
+
+        for ($i = 1; $i <= $count; $i++) {
+            $zain = new ZainService();
+            $xml = $zain->buildPinPrintingXml($productId, $amount, $cashier);
+            $response = $zain->sendRequest($xml);
+
+            if (strpos($response, '<') !== 0) {
+                $results[] = [
+                    'index' => $i,
+                    'error' => 'Invalid XML response',
+                    'raw' => $response,
+                ];
+                continue;
+            }
+
+            $parsed = simplexml_load_string($response);
+
+            $results[] = [
+                'index' => $i,
+                'raw_response' => $response,
+                'result' => (string)($parsed->RESULT ?? ''),
+                'result_text' => (string)($parsed->RESULTTEXT ?? ''),
+                'pin' => (string)($parsed->PINCREDENTIALS->PIN ?? ''),
+                'serial' => (string)($parsed->PINCREDENTIALS->SERIAL ?? ''),
+                'valid_to' => (string)($parsed->PINCREDENTIALS->VALIDTO ?? ''),
+            ];
+        }
+        $get_data = self::createOrder($product_id_zain,$count,$package,$user,$payment_method, $transaction_id);
+        $orderId = $get_data->orderId;
+        $new_price = $get_data->new_price;
+        foreach ($results as $result) {
+            $order =  Order::create([
+                'parent_id'=>$orderId->id,
+                'merchant_id'=>$user->id,
+                'name'=>$package->name,
+                'package_id'=>$package->id,
+                'card_number'=>$result['pin'],
+                'serial_number'=>$result['serial'],
+                'cost'=>$package->cost,
+                'total'=>$package->card_price * $count,
+                'card_price'=>$package->card_price,
+                'payment_method'=>$payment_method,
+                'merchant_price'=>$new_price,
+                'transaction_id'=>$transaction_id,
+                'end_date'=>$result['valid_to'],
+                'count'=>1,
+                'status'=>1,
+                'image'=>$package->category->company->image,
+                'color'=>$package->category->company->color,
+                'api_linked'=>1,
+                'cart_type'=>"zain",
+                'company_name'=>$package->category->company->name,
+                'description'=>$package->category->description,
+            ]);
+            $card = Card::create([
+                'card_number'=>$result['pin'],
+                'serial_number'=>$result['serial'],
+                'end_date'=>$result['valid_to'],
+                'package_id' => $package->id,
+                'sold'=>1,
+                'cart_type'=>"zain",
+            ]);
+            if ($payment_method == "wallet"){
+                self::storeSaleZain($user,$package,$new_price,$order,$payment_method);
+            }
+        }
+
+
+        $data = [
+            'gencode' => $package->product_id_zain,
+            'total_price'=>(string)($package->card_price * $count),
+            'order_id'=>$orderId->id,
+            ];
+        return ApiController::respondWithSuccess($data);
+    }
+    public static function createOrder($product_id_zain,$count,$package,$user,$payment_method, $transaction_id = null){
+        if ($new_price =$user->prices()->where('package_id',$package->id)->where('type',$user->type)->first()){
+            $merchant_price = $new_price->price;
+        }
+        $new_price = isset($merchant_price) ? $merchant_price :  $package->prices()->where('type',$user->type)->first()->price;
+
+
+        $orderId =  Order::create([
+            'merchant_id'=>$user->id,
+            'name'=>$package->name,
+            'package_id'=>$package->id,
+            'cost'=>$package->cost,
+            'card_price'=>$package->card_price,
+            'total'=>$package->card_price * $count,
+            'payment_method'=>$payment_method,
+            'merchant_price'=>$new_price,
+            'transaction_id'=>$transaction_id,
+            'count'=>$count,
+            'status'=>1,
+            'image'=>$package->category->company->image,
+            'color'=>$package->category->company->color,
+            'api_linked'=>1,
+            'cart_type'=>"zain",
+            'paid_order'=>$payment_method == "wallet" ?  "paid" :"not_paid",
+            'company_name'=>$package->category->company->name,
+            'description'=>$package->category->description,
+        ]);
+        return (object)['orderId'=>$orderId , 'new_price'=>$new_price];
+    }
+
+
+   public static function storeSaleZain($merchant,$package,$new_price,$order,$payment_method)
+        {
+            try {
+                if ($payment_method == "online" ){
+                    $percentage = $merchant->geidea_percentage ? $merchant->geidea_percentage : settings()->geidea_percentage;
+
+                    $get_commission = $package->card_price * $percentage ;
+                    $statistics = \App\Models\Statistic::find(1);
+                    $statistics->update([
+                        'geidea_commission' => $statistics->geidea_commission + $get_commission
+                    ]);
+                    $result = ($package->card_price - $new_price) - $get_commission;
+                    $profit = $merchant->profits + $result;
+                }else{
+                    $profit = $merchant->profits + ($package->card_price - $new_price);
+                }
+                $transfer = Transfer::create([
+                    'userable_id'=>$merchant->id,
+                    'order_id'=>$order->id,
+                    'userable_type'=>get_class($merchant),
+                    'type'=>"sales",
+                    'api_linked'=>1,
+                    'cart_type'=>"zain",
+                    'geidea_commission'=> $payment_method == "online" ? $get_commission : null,
+                    'geidea_percentage'=>$payment_method == "online" ? $percentage : 0,
+                    'amount'=>$package->card_price,
+                    'profits'=>$payment_method == "online"  ? $result   : ($package->card_price - $new_price),
+                    'profits_total'=>$profit,
+                    'balance_total'=>$payment_method == "online" ? $merchant->balance  : $merchant->balance - $package->card_price,
+                ]);
+                updateTransfer($transfer,$merchant);
+                $merchant->update([
+                    'balance'=>$payment_method == "online" ? $merchant->balance : $merchant->balance - $package->card_price,
+                    'sales'=>$merchant->sales + $package->card_price,
+                    'profits'=>$profit,
+                ]);
+                DB::commit(); // all good
+                return $transfer;
+            } catch (\Exception $exception) {
+                return ApiController::respondWithError(trans('api.500'));
+            }
+        }
+
 }
