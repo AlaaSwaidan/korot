@@ -162,7 +162,7 @@ class SearchController extends Controller
             ->pluck('total', 'payment_method');
 
         // 5) Overall sum (with no restriction on payment_method)
-        $all_total = $ordersQuery->sum('card_price');
+//        $all_total = $ordersQuery->sum('card_price');
 
         // 6) Extract the “online” and “wallet” sums from $totals
         $online_total = $totals['online'] ?? 0;
@@ -174,7 +174,7 @@ class SearchController extends Controller
             'distributor'   => $distributor,
             'online_total'  => $online_total,
             'wallet_total'  => $wallet_total,
-            'all_total'     => $all_total,
+            'all_total'     => $online_total + $wallet_total ,
             'from_date'     => $startDate->format('Y-m-d'),
             'to_date'       => $endDate->format('Y-m-d'),
             'startDate'     => $startDate,
