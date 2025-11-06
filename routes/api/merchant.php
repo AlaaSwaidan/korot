@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Merchant\IndebtednessController;
 use App\Http\Controllers\Api\Merchant\OrderController;
 use App\Http\Controllers\Api\Merchant\StatisticController;
 use App\Http\Controllers\Api\ZainIntegrationController;
+use App\Http\Controllers\Api\TwelveController;
 use App\Http\Controllers\Api\ApiController;
 /*
 |--------------------------------------------------------------------------
@@ -76,7 +77,10 @@ Route::namespace('Api')->middleware(['Lang'])->group( function () {
         Route::get( '/statistics', [StatisticController::class,"statistics"]);
         Route::get( '/merchant-reports', [StatisticController::class,"merchant_reports"]);
         Route::post( '/pay-zain', [ZainIntegrationController::class,"pinPrinting"]);
-
+        Route::post('/purchase', [TwelveController::class, 'purchase']);
+        Route::get('/products', [TwelveController::class, 'products']);
+        Route::post('/categories', [TwelveController::class, 'categories']);
+        Route::post('/productDetails/{product}', [TwelveController::class, 'productDetails']);
     });
 
 });

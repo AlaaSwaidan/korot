@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Http;
 
 class ZainService
 {
-    protected  $endpoint = 'https://webservice-test.zain.epayworldwide.com/up-interface';
-    protected  $username = 'UPLive_ON000041';
-    protected  $password = '4016a35288d6808a';
-    protected  $terminalId = 'ON000041';
+    protected  $endpoint = 'https://ers.zain.epayworldwide.com/up-interface';
+    protected  $username = 'UPLive_ON000049';
+    protected  $password = '9d5c6baf08eb9510';
+    protected  $terminalId = 'ON000049';
 
     public function generateTxId(): string
     {
