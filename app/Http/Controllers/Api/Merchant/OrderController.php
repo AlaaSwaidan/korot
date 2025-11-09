@@ -70,7 +70,7 @@ class OrderController extends Controller
             $package = Package::find($request->package_id);
           $card = $package->cards()->where('sold',0)->lockForUpdate()->get();
 
-          if ($package->gencode != null && $package->gencode_status == 1  && $card->count() == 0){
+          if ($package->gencode != null && $package->gencode_status == 1  && $card->where('sold',0)->count() == 0){
 
              //api_linked for transfers table and orders
               if ($request->payment_method == "wallet"){
@@ -471,7 +471,9 @@ class OrderController extends Controller
             }
 
             $parsed = simplexml_load_string($response);
-
+            if ($parsed->RESULT != "0") {
+                return "error";
+            }
             $results[] = [
                 'index' => $i,
                 'raw_response' => $response,
