@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ExternalServiceResource extends JsonResource
@@ -29,10 +30,12 @@ class ExternalServiceResource extends JsonResource
         $monthYear = $request->get('date'); // e.g. "2025-05"
         [$year, $month] = explode('-', $monthYear);
         $monthYearId = $year . sprintf('%02d', $month) . '-' . $merchant->id;
+
+        $lastDay = Carbon::createFromFormat('Y-m', $monthYear)->endOfMonth()->toDateString();
         return [
             // 🧾 Invoice
             'InvoiceID'   =>$monthYearId,
-            'InvoiceDate' => now()->format('Y-m-d'),
+            'InvoiceDate' => $lastDay,
             'Total'       => round($itemsGrouped->sum('Total'), 2),
 
             // 👤 Customer Info
