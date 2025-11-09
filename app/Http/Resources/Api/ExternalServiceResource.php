@@ -2,61 +2,55 @@
 
 namespace App\Http\Resources\Api;
 
-use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ExternalServiceResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
     public function toArray($request)
     {
+        // 🧠 If this resource receives a collection of orders for a merchant:
+        $merchant = $this->first()?->merchant ?? $this->merchant;
 
-        $data= [
-//            'id' => $this->id,
-//            'transaction_id' => $this->transaction_id ? json_decode($this->transaction_id) : null,
-            'id'=>$this->merchant->id,
-            'name'=>$this->merchant->name,
-            'phone'=>$this->merchant->phone,
-//            'tax_number'=>$this->merchant->tax_number,
-//            'registration_number'=>$this->merchant->commercial_number,
-            'location'=>$this->merchant->location,
-            'region'=>$this->merchant->region_id,
-            'city'=>$this->merchant->city_id ?$this->merchant->city->name_ar : null ,
-            'street'=>$this->merchant->street,
-            'distinct'=>$this->merchant->distinct,
-            'zipcode'=>$this->merchant->zipcode,
-            'building_number'=>$this->merchant->building_number,
-            'extra_number'=>$this->merchant->extra_number,
-           'item'=>[
-               'item_code' =>$this->package_id ,
-               'item_name' =>$this->company_name[app()->getLocale()] .'  '.$this->package->category->name[app()->getLocale()].'  '.$this->package->name[app()->getLocale()],
-               'card_name' =>$this->name[app()->getLocale()] ,
-               'merchant_price' => round($this->total_price,2),
-               'quantity' => round($this->total_quantity,2),
+        // Group orders by package_id for this merchant
+        $itemsGrouped = $this->groupBy('package_id')->map(function ($orders) {
+            $first = $orders->first();
+
+            return [
+                'ItemCode' => $first->package_id,
+                'ItemName' =>
+                    ($first->company_name[app()->getLocale()] ?? '') . ' ' .
+                    ($first->package->category->name[app()->getLocale()] ?? '') . ' ' .
+                    ($first->package->name[app()->getLocale()] ?? ''),
+                'Quantity' => (int) $orders->sum('count'),
+                'Total' => round($orders->sum('merchant_price'), 2),
+            ];
+        })->values();
+
+        $monthYear = $request->get('date'); // e.g. "2025-05"
+        [$year, $month] = explode('-', $monthYear);
+        $monthYearId = $year . sprintf('%02d', $month) . '-' . $merchant->id;
+        return [
+            // 🧾 Invoice
+            'InvoiceID'   =>$monthYearId,
+            'InvoiceDate' => now()->format('Y-m-d'),
+            'Total'       => round($itemsGrouped->sum('Total'), 2),
+
+            // 👤 Customer Info
+            'Customer' => [
+                'ID'                 => $merchant->id,
+                'Name'               => $merchant->name,
+                'TaxNumber'          => $merchant->tax_number,
+                'RegistrationNumber' => $merchant->commercial_number,
+                'City'               => optional($merchant->city)->name_ar,
+                'Street'             => $merchant->street,
+                'Distinct'           => $merchant->distinct,
+                'ZipCode'            => $merchant->zipcode,
+                'BuildingNo'         => $merchant->building_number,
+                'ExtraNo'            => $merchant->extra_number,
             ],
 
-//            'company'=>[
-//                'name'=>"مؤسسة بطاقات التجارية",
-//                'tax_number'=>"300453343300003",
-//                'location'=>"الهفوف شارع أبوبكر",
-//            ],
-
-//            'card_number' => $this->card_number,
-//            'serial_number' => $this->serial_number,
-//            'card_price' => $this->card_price,
-
-//            'end_date' => $this->end_date,
-//            'created_at' => $this->created_at->format('Y-m-d'),
-
+            // 📦 Items (packages)
+            'Items' => $itemsGrouped,
         ];
-        return   array_filter($data, function($value) {
-            return $value !== null && $value !== '' && $value !== "" ;
-        });
     }
 }
-

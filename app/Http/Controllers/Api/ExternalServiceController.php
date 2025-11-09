@@ -117,6 +117,49 @@ class ExternalServiceController extends Controller
         ]);
     }
 
+    public function all_service(ExternelServiceRequest $request)
+    {
+        $perPage = (int) $request->get('per_page', 100);
+        $page = (int) $request->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+
+        $monthYear = $request->get('date'); // e.g. "2025-05"
+
+        if (!$monthYear || !preg_match('/^\d{4}-\d{2}$/', $monthYear)) {
+            return ApiController::respondWithError("Invalid month format. Use YYYY-MM (e.g. 2025-05)");
+        }
+
+        [$year, $month] = explode('-', $monthYear);
+
+        // ✅ Get all merchants with their orders for that month
+        $query = Order::with([
+            'merchant',
+            'package.category'
+        ])
+            ->whereNotNull('parent_id')
+            ->where('paid_order', 'paid')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->select('id', 'merchant_id', 'package_id', 'company_name', 'name', 'count', 'merchant_price', 'created_at')
+            ->orderBy('merchant_id')
+            ->paginate($perPage)
+            ->groupBy('merchant_id');
+
+        // ✅ Paginate manually
+//        $paged = $query->forPage($page, $perPage);
+
+
+        return ApiController::respondWithSuccess([
+            'Success' => true,
+            'Page' => $page,
+            'TotalPage' => $perPage,
+            'Month' => $monthYear,
+            'Invoices' => ExternalServiceResource::collection($query),
+        ]);
+    }
+
+
+
     public function external_merchant_service(Request $request){
 
         $orders = Order::where('parent_id','!=',null)->where('paid_order',"paid");

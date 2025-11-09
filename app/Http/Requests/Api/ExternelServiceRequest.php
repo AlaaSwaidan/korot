@@ -15,7 +15,7 @@ class ExternelServiceRequest extends REQUEST_API_PARENT
     {
 
         return [
-            'merchant_id' =>'required|exists:merchants,id',
+//            'merchant_id' =>'required|exists:merchants,id',
         ];
     }
 }
