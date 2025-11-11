@@ -150,27 +150,36 @@ class CompinedInvoicesController extends Controller
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->select('id', 'package_id', 'company_name', 'count', 'merchant_price')
-            ->get()
-            ->groupBy('package_id')
-            ->map(function ($orders) {
-                $first = $orders->first();
+            ->get();
 
-                return [
-                    'ItemCode' => $first->package_id,
-                    'ItemName' =>
-                        ($first->company_name[app()->getLocale()] ?? '') . ' ' .
-                        ($first->package->category->name[app()->getLocale()] ?? '') . ' ' .
-                        ($first->package->name[app()->getLocale()] ?? ''),
-                    'Quantity' => (int) $orders->sum('count'),
-                    'Total' => round($orders->sum('merchant_price'), 2),
-                ];
-            })->values();
+        $items = $orders->groupBy('package_id')->map(function ($orders) {
+            $first = $orders->first();
 
-        // Return JSON for AJAX
+            $totalForPackage = (float) $orders->sum('merchant_price');
+            $quantity = (int) $orders->sum('count');
+
+            return [
+                'ItemCode' => $first->package_id,
+                'ItemName' => (
+                    ($first->company_name[app()->getLocale()] ?? '') . ' ' .
+                    ($first->package->category->name[app()->getLocale()] ?? '') . ' ' .
+                    ($first->package->name[app()->getLocale()] ?? '')
+                ),
+                'Quantity' => $quantity,
+                // keep numeric to ease JS formatting
+                'Total' => round($totalForPackage, 2),
+            ];
+        })->values();
+
+        // Compute merchant total from items (same source)
+        $merchantTotal = (float) $items->sum('Total');
+
         return response()->json([
-            'items' => $orders,
+            'items' => $items,
+            'merchant_total' => round($merchantTotal, 2),
         ]);
     }
+
 
 
 }

@@ -22,7 +22,12 @@
         <td>{{ $merchant->tax_number }}</td>
         <td>{{ $merchant->commercial_number }}</td>
         <td>{{ optional($merchant->city)->name_ar }}</td>
-        <td><div class="badge badge-light-success">{{ number_format($invoice->total_price, 2) }} ر.س</div></td>
+        <td>
+            <div id="merchant-total-{{ $merchant->id }}" class="badge badge-light-success">
+              --
+            </div>
+        </td>
+{{--        <td><div class="badge badge-light-success">{{ number_format($total, 2) }} ر.س</div></td>--}}
         <td>{{ $lastDay }}</td>
         <td>
             <button class="btn btn-sm btn-light-primary btn-show-items"

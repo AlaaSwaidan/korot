@@ -75,7 +75,7 @@
             const date = btn.data('date');
             const targetRow = $('#items-row-' + merchantId);
             const container = targetRow.find('.items-container');
-
+            const totalCell = $('#merchant-total-' + merchantId);
             // If already visible, toggle off
             if (targetRow.is(':visible')) {
                 targetRow.hide();
@@ -122,6 +122,10 @@
 
                     html += '</tbody></table>';
                     container.html(html);
+
+                    // Update merchant total cell with the value returned from server
+                    const merchantTotal = parseFloat(response.merchant_total || 0).toFixed(2);
+                    totalCell.html(merchantTotal + ' ر.س');
                 },
                 error: function () {
                     container.html('<div class="text-danger text-center py-3">حدث خطأ أثناء تحميل البيانات.</div>');
