@@ -1,4 +1,7 @@
-@foreach($invoices as $index => $invoice)
-    @php $rowIndex = $startIndex + $index + 1; @endphp
-    @include('admin.external_services.invoice_row', ['invoice' => $invoice, 'index' => $rowIndex])
+@php
+    // Group only the paginated items
+    $grouped = $invoices->getCollection()->groupBy('merchant_id');
+@endphp
+@foreach($grouped as $index => $invoice)
+    @include('admin.external_services.invoice_row', ['invoice' => $invoice, 'index' => $index])
 @endforeach

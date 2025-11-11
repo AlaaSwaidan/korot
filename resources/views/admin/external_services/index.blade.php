@@ -47,7 +47,10 @@
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                             <th>#</th>
                             <th>رقم الفاتورة</th>
+                            <th>رقم التاجر</th>
                             <th>اسم التاجر</th>
+                            <th>الرقم الضريبي</th>
+                            <th>الرقم التجاري</th>
                             <th>المدينة</th>
                             <th>إجمالي الفاتورة</th>
                             <th>تاريخ الفاتورة</th>
@@ -58,45 +61,10 @@
                        @include('admin.external_services.invoice_rows_ajax')
                         </tbody>
                     </table>
-                    <button id="load-more-btn" class="btn btn-primary" data-page="1">عرض المزيد</button>
-
                 </div>
+                {!! $invoices->render() !!}
             </div>
         </div>
     </div>
 @endsection
-@section('scripts')
-    <script>
-        let currentPage = 1;
-        const date = "{{ $date }}"; // current filter
-        const loadMoreBtn = document.getElementById('load-more-btn');
-        const container = document.getElementById('invoice-list');
 
-        loadMoreBtn.addEventListener('click', function() {
-            currentPage++;
-
-            fetch("{{ route('admin.external_services.index') }}?page=" + currentPage + "&date=" + date, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.invoices || data.invoices.trim() === '') {
-                        loadMoreBtn.style.display = 'none';
-                        alert('لا يوجد فواتير اخرى')
-                        return;
-                    }
-
-                    container.insertAdjacentHTML('beforeend', data.invoices);
-
-                    // if (currentPage >= data.totalPages) {
-                    //     loadMoreBtn.style.display = 'none';
-                    // }
-                })
-                .catch(err => console.error(err));
-        });
-
-
-    </script>
-@endsection
