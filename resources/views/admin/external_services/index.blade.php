@@ -67,4 +67,67 @@
         </div>
     </div>
 @endsection
+@section('scripts')
+    <script>
+        $(document).on('click', '.btn-show-items', function () {
+            const btn = $(this);
+            const merchantId = btn.data('merchant-id');
+            const date = btn.data('date');
+            const targetRow = $('#items-row-' + merchantId);
+            const container = targetRow.find('.items-container');
+
+            // If already visible, toggle off
+            if (targetRow.is(':visible')) {
+                targetRow.hide();
+                return;
+            }
+
+            // Show loading
+            container.html('<div class="text-center py-4">جارٍ التحميل...</div>');
+            targetRow.show();
+
+            $.ajax({
+                url: "{{ route('admin.external_services.details', '') }}/" + merchantId,
+                data: { date: date },
+                method: 'GET',
+                success: function (response) {
+                    if (response.items.length === 0) {
+                        container.html('<div class="text-center py-3 text-muted">لا توجد عناصر</div>');
+                        return;
+                    }
+
+                    let html = `
+                <table class="table table-bordered align-middle mt-3">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>الكود</th>
+                            <th>اسم العنصر</th>
+                            <th>الكمية</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+                    response.items.forEach(item => {
+                        html += `
+                    <tr>
+                        <td>${item.ItemCode}</td>
+                        <td>${item.ItemName}</td>
+                        <td>${item.Quantity}</td>
+                        <td>${item.Total.toFixed(2)}</td>
+                    </tr>
+                `;
+                    });
+
+                    html += '</tbody></table>';
+                    container.html(html);
+                },
+                error: function () {
+                    container.html('<div class="text-danger text-center py-3">حدث خطأ أثناء تحميل البيانات.</div>');
+                }
+            });
+        });
+    </script>
+@endsection
 

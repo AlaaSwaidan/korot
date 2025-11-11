@@ -42,6 +42,8 @@ Route::group(['prefix' =>'/admin', 'as' => 'admin.', 'middleware' => ['CheckActi
 
     Route::get('/external-services', [CompinedInvoicesController::class, 'index'])
         ->name('external_services.index');
+    Route::get('/admin/external-services/details/{merchant_id}', [CompinedInvoicesController::class, 'details'])
+        ->name('external_services.details');
 
     Route::get( '/importAndFilter', [ExportSuspendedCardController::class,"importAndFilter"])->name('importAndFilter');//export cards
     Route::get( '/suspended-cards/export', [ExportSuspendedCardController::class,"export"])->name('suspended-cards.export');//export cards

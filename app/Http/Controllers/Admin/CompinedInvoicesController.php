@@ -92,9 +92,7 @@ class CompinedInvoicesController extends Controller
 //    }
     public function index(Request $request)
     {
-        $perPage = (int)$request->get('per_page', 100);
-        $page = (int)$request->get('page', 1);
-        $offset = ($page - 1) * $perPage;
+
 
         $monthYear = $request->get('date', now()->format('Y-m')); // e.g. "2025-05"
 //        $monthYear = $request->get('date', "2025-10"); // e.g. "2025-05"
@@ -103,17 +101,35 @@ class CompinedInvoicesController extends Controller
         [$year, $month] = explode('-', $monthYear);
 
         // ✅ Get all merchants with their orders for that month
-        $query = Order::with([
-            'merchant',
-            'package.category'
-        ])
+//        $query = Order::with([
+//            'merchant',
+//            'package.category'
+//        ])
+//            ->whereNotNull('parent_id')
+//            ->where('paid_order', 'paid')
+//            ->whereYear('created_at', $year)
+//            ->whereMonth('created_at', $month)
+//            ->select('id', 'merchant_id', 'package_id', 'company_name', 'name', 'count', 'merchant_price', 'created_at')
+//            ->orderBy('merchant_id')
+//            ->paginate(20);
+        // 1️⃣ Aggregate at database level per merchant
+        $query = Order::query()
             ->whereNotNull('parent_id')
             ->where('paid_order', 'paid')
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->select('id', 'merchant_id', 'package_id', 'company_name', 'name', 'count', 'merchant_price', 'created_at')
+            ->selectRaw('
+            merchant_id,
+            SUM(merchant_price) as total_price,
+            SUM(`count`) as total_quantity,
+            MAX(created_at) as last_order_at
+        ')
+            ->groupBy('merchant_id')
+            ->with(['merchant:id,name,tax_number,commercial_number,city_id', 'merchant.city:id,name_ar'])
             ->orderBy('merchant_id')
-            ->paginate(20);
+            ->paginate(10);
+        
+        $query->appends($request->except('page'));
 
 
         // Normal page load
@@ -122,5 +138,39 @@ class CompinedInvoicesController extends Controller
             'date'        => $monthYear,
         ]);
     }
+    public function details($merchant_id, Request $request)
+    {
+        $monthYear = $request->get('date', now()->format('Y-m'));
+        [$year, $month] = explode('-', $monthYear);
+
+        $orders = Order::with('package.category')
+            ->where('merchant_id', $merchant_id)
+            ->whereNotNull('parent_id')
+            ->where('paid_order', 'paid')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->select('id', 'package_id', 'company_name', 'count', 'merchant_price')
+            ->get()
+            ->groupBy('package_id')
+            ->map(function ($orders) {
+                $first = $orders->first();
+
+                return [
+                    'ItemCode' => $first->package_id,
+                    'ItemName' =>
+                        ($first->company_name[app()->getLocale()] ?? '') . ' ' .
+                        ($first->package->category->name[app()->getLocale()] ?? '') . ' ' .
+                        ($first->package->name[app()->getLocale()] ?? ''),
+                    'Quantity' => (int) $orders->sum('count'),
+                    'Total' => round($orders->sum('merchant_price'), 2),
+                ];
+            })->values();
+
+        // Return JSON for AJAX
+        return response()->json([
+            'items' => $orders,
+        ]);
+    }
+
 
 }
