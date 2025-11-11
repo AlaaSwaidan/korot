@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CurrencyController;
 use Modules\Accounts\Http\Controllers\BanksController;
 use Modules\Accounts\Http\Controllers\OutgoingsController;
 use App\Http\Controllers\Admin\ExportSuspendedCardController;
+use App\Http\Controllers\Admin\CompinedInvoicesController;
 
 /* start admin control*/
 Route::get('/test', function () {
@@ -38,6 +39,9 @@ Route::get( '/admin/login', [LoginController::class,"showLoginForm"])->name('adm
 Route::post( '/admin/login', [LoginController::class,"login"])->name('admin.post.login');
 Route::post( '/admin/logout', [LoginController::class,"logout"])->name('admin.logout');
 Route::group(['prefix' =>'/admin', 'as' => 'admin.', 'middleware' => ['CheckActiveSession','admin:admin,/admin/login']],static function() {
+
+    Route::get('/external-services', [CompinedInvoicesController::class, 'index'])
+        ->name('external_services.index');
 
     Route::get( '/importAndFilter', [ExportSuspendedCardController::class,"importAndFilter"])->name('importAndFilter');//export cards
     Route::get( '/suspended-cards/export', [ExportSuspendedCardController::class,"export"])->name('suspended-cards.export');//export cards

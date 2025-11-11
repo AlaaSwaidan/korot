@@ -73,7 +73,7 @@ Route::namespace('Api')->middleware(['Lang'])->group( function () {
 
     Route::middleware('check.token')->group(function () {
         Route::get( '/get-all-invoices', [ExternalServiceController::class,"external_service"]);
-        Route::get( '/getinvoices', [ExternalServiceController::class,"all_service"]);
+        Route::get( '/getinvoices', [ExternalServiceController::class,"all_service"])->name('get-all-invoices');
         Route::get( '/get-all-merchant-of-invoices', [ExternalServiceController::class,"external_merchant_service"]);
 
         // other protected routes

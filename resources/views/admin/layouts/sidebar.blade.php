@@ -439,9 +439,43 @@
                     </div>
                     <!--end:Menu sub-->
                 </div>
+                <!--begin:Menu item-->
+
                 @endcan
                 <!--end:Menu item-->
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (strpos(URL::current(), 'external_services.index') != false )}}">
+                    <!--begin:Menu link-->
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <!--begin::Svg Icon | path: icons/duotune/communication/com005.svg-->
+                            <i class="fonticon-layers"></i>
+                            <!--end::Svg Icon-->
+                        </span>
+                        <span class="menu-title">الفواتير </span>
+                        <span class="menu-arrow"></span>
+                    </span>
+                    <!--end:Menu link-->
+                    <!--begin:Menu sub-->
+                    <div class="menu-sub menu-sub-accordion ">
 
+                        <!--begin:Menu item-->
+
+                            <div class="menu-item">
+                                <!--begin:Menu link-->
+                                <a class="menu-link {{ (strpos(URL::current(), 'external_services.index') ) != false  ? 'active' : '' }}" href="{{ route('admin.external_services.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                    <span class="menu-title">الفواتير المجمعة</span>
+                                </a>
+                                <!--end:Menu link-->
+                            </div>
+
+                        <!--end:Menu item-->
+
+                    </div>
+                    <!--end:Menu sub-->
+                </div>
                 <!--begin:Menu item-->
                 @can('viewTransfers_side_menu')
                 <!--begin:Menu item-->
