@@ -120,8 +120,7 @@ class CompinedInvoicesController extends Controller
             ->whereMonth('created_at', $month)
             ->selectRaw('
             merchant_id,
-            SUM(merchant_price) as total_price,
-            SUM(`count`) as total_quantity,
+         
             MAX(created_at) as last_order_at
         ')
             ->groupBy('merchant_id')
