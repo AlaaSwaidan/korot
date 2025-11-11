@@ -127,8 +127,8 @@ class CompinedInvoicesController extends Controller
             ->groupBy('merchant_id')
             ->with(['merchant:id,name,tax_number,commercial_number,city_id', 'merchant.city:id,name_ar'])
             ->orderBy('merchant_id')
-            ->paginate(10);
-        
+            ->paginate(5);
+
         $query->appends($request->except('page'));
 
 
