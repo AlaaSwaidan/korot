@@ -120,13 +120,13 @@ class CompinedInvoicesController extends Controller
             ->whereMonth('created_at', $month)
             ->selectRaw('
             merchant_id,
-         
+
             MAX(created_at) as last_order_at
         ')
             ->groupBy('merchant_id')
             ->with(['merchant:id,name,tax_number,commercial_number,city_id', 'merchant.city:id,name_ar'])
             ->orderBy('merchant_id')
-            ->paginate(5);
+            ->paginate(2);
 
         $query->appends($request->except('page'));
 
