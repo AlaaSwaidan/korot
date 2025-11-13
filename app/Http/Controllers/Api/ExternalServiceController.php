@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ExternelServiceRequest;
 use App\Http\Resources\Api\ExternalMerchantServiceResource;
 use App\Http\Resources\Api\ExternalServiceResource;
-use App\Http\Resources\Api\NewExternalMerchantServiceResource;
 use App\Models\Card;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -172,33 +171,25 @@ class ExternalServiceController extends Controller
         [$year, $month] = explode('-', $monthYear);
 
         // ✅ Step 1: Get all merchants who have paid orders that month
-
-        $merchantQuery = Order::whereNotNull('parent_id')
+        $merchantIds = Order::whereNotNull('parent_id')
             ->where('paid_order', 'paid')
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->select('merchant_id')
-            ->distinct();
-
-        $totalMerchants = (clone $merchantQuery)->distinct()->count('merchant_id');
-
-        $pagedMerchantIds = $merchantQuery
-            ->orderBy('merchant_id')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
+            ->distinct()
             ->pluck('merchant_id');
 
-        $orders = Order::with([
-            'merchant:id,name,tax_number,commercial_number,city_id,street,distinct,zipcode,building_number,extra_number',
-            'package:id,store_id,name',
-            'package.category:id,name'
-        ])
-            ->whereIn('merchant_id', $pagedMerchantIds)
+        // ✅ Step 2: Paginate merchants
+        $totalMerchants = $merchantIds->count();
+        $pagedMerchants = $merchantIds->forPage($page, $perPage);
+
+        // ✅ Step 3: Get all orders for those paged merchants
+        $orders = Order::with(['merchant', 'package.category'])
             ->whereNotNull('parent_id')
             ->where('paid_order', 'paid')
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->select('id', 'merchant_id', 'package_id', 'company_name', 'count', 'merchant_price', 'created_at')
+            ->whereIn('merchant_id', $pagedMerchants)
+            ->select('id', 'merchant_id', 'package_id', 'company_name', 'name', 'count', 'merchant_price', 'created_at')
             ->orderBy('merchant_id')
             ->get()
             ->groupBy('merchant_id');
