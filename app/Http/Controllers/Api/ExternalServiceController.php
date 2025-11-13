@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ExternelServiceRequest;
 use App\Http\Resources\Api\ExternalMerchantServiceResource;
 use App\Http\Resources\Api\ExternalServiceResource;
+use App\Http\Resources\Api\NewExternalMerchantServiceResource;
 use App\Models\Card;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -117,45 +118,119 @@ class ExternalServiceController extends Controller
         ]);
     }
 
+//    public function all_service(ExternelServiceRequest $request)
+//    {
+//        $perPage = (int) $request->get('per_page', 100);
+//        $page = (int) $request->get('page', 1);
+//        $offset = ($page - 1) * $perPage;
+//
+//        $monthYear = $request->get('date'); // e.g. "2025-05"
+//
+//        if (!$monthYear || !preg_match('/^\d{4}-\d{2}$/', $monthYear)) {
+//            return ApiController::respondWithError("Invalid month format. Use YYYY-MM (e.g. 2025-05)");
+//        }
+//
+//        [$year, $month] = explode('-', $monthYear);
+//
+//        // ✅ Get all merchants with their orders for that month
+//        $query = Order::with([
+//            'merchant',
+//            'package.category'
+//        ])
+//            ->whereNotNull('parent_id')
+//            ->where('paid_order', 'paid')
+//            ->whereYear('created_at', $year)
+//            ->whereMonth('created_at', $month)
+//            ->select('id', 'merchant_id', 'package_id', 'company_name', 'name', 'count', 'merchant_price', 'created_at')
+//            ->orderBy('merchant_id')
+//            ->paginate($perPage)
+//            ->groupBy('merchant_id');
+//
+//        // ✅ Paginate manually
+////        $paged = $query->forPage($page, $perPage);
+//
+//
+//        return ApiController::respondWithSuccess([
+//            'Success' => true,
+//            'Page' => $page,
+//            'TotalPage' => $perPage,
+//            'Month' => $monthYear,
+//            'Invoices' => ExternalServiceResource::collection($query),
+//        ]);
+//    }
     public function all_service(ExternelServiceRequest $request)
     {
-        $perPage = (int) $request->get('per_page', 100);
+        $perPage = (int) $request->get('per_page', 1); // each page = 1 merchant
         $page = (int) $request->get('page', 1);
-        $offset = ($page - 1) * $perPage;
-
         $monthYear = $request->get('date'); // e.g. "2025-05"
 
+        // ✅ Validate date
         if (!$monthYear || !preg_match('/^\d{4}-\d{2}$/', $monthYear)) {
             return ApiController::respondWithError("Invalid month format. Use YYYY-MM (e.g. 2025-05)");
         }
 
         [$year, $month] = explode('-', $monthYear);
 
-        // ✅ Get all merchants with their orders for that month
-        $query = Order::with([
-            'merchant',
-            'package.category'
-        ])
+        // ✅ Step 1: Get all merchants who have paid orders that month
+        $merchantIds = Order::whereNotNull('parent_id')
+            ->where('paid_order', 'paid')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->distinct()
+            ->pluck('merchant_id');
+
+        // ✅ Step 2: Paginate merchants
+        $totalMerchants = $merchantIds->count();
+        $pagedMerchants = $merchantIds->forPage($page, $perPage);
+
+        // ✅ Step 3: Get all orders for those paged merchants
+        $orders = Order::with(['merchant', 'package.category'])
             ->whereNotNull('parent_id')
             ->where('paid_order', 'paid')
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
+            ->whereIn('merchant_id', $pagedMerchants)
             ->select('id', 'merchant_id', 'package_id', 'company_name', 'name', 'count', 'merchant_price', 'created_at')
             ->orderBy('merchant_id')
-            ->paginate($perPage)
+            ->get()
             ->groupBy('merchant_id');
 
-        // ✅ Paginate manually
-//        $paged = $query->forPage($page, $perPage);
-
-
+        // ✅ Step 4: Return formatted response
         return ApiController::respondWithSuccess([
-            'Success' => true,
-            'Page' => $page,
-            'TotalPage' => $perPage,
-            'Month' => $monthYear,
-            'Invoices' => ExternalServiceResource::collection($query),
+            'success' => true,
+            'page' => $page,
+            'per_page' => $perPage,
+            'total_merchants' => $totalMerchants,
+            'total_pages' => ceil($totalMerchants / $perPage),
+            'month' => $monthYear,
+            'invoices' => $orders->map(function ($merchantOrders) use ($monthYear) {
+                $merchant = $merchantOrders->first()->merchant;
+                $itemsGrouped = $merchantOrders->groupBy('package_id')->map(function ($orders) {
+                    $first = $orders->first();
+                    return [
+                        'ItemCode' => $first->package_id,
+                        'ItemName' => ($first->company_name[app()->getLocale()] ?? '') . ' ' .
+                            ($first->package->category->name[app()->getLocale()] ?? '') . ' ' .
+                            ($first->package->name[app()->getLocale()] ?? ''),
+                        'Quantity' => (int) $orders->sum('count'),
+                        'Total' => round($orders->sum('merchant_price'), 2),
+                    ];
+                })->values();
+
+                [$year, $month] = explode('-', $monthYear);
+                $monthYearId = $year . sprintf('%02d', $month) . '-' . $merchant->id;
+                $lastDay = \Carbon\Carbon::createFromFormat('Y-m', $monthYear)->endOfMonth()->toDateString();
+
+                return [
+                    'InvoiceID'   => $monthYearId,
+                    'InvoiceDate' => $lastDay,
+                    'Total'       => round($itemsGrouped->sum('Total'), 2),
+                    'Customer'    => new NewExternalMerchantServiceResource($merchant),
+                    'Items'       => $itemsGrouped,
+                ];
+            })->values(),
         ]);
+
     }
 
 
