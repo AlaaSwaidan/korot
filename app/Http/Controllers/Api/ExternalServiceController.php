@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ExternelServiceRequest;
 use App\Http\Resources\Api\ExternalMerchantServiceResource;
 use App\Http\Resources\Api\ExternalServiceResource;
+use App\Http\Resources\Api\NewExternalMerchantServiceResource;
 use App\Models\Card;
 use App\Models\Order;
 use Illuminate\Http\Request;
