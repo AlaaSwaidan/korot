@@ -139,7 +139,7 @@ class OrderController extends Controller
               }
               else  if ($request->payment_method == "online"){
                   //api_linked for transfers table and orders
-                  $get_return_data = self::pinPrinting($package->gencode_like_card,$request->count,$package,$this->user,"online",$request->transaction_id);
+                  $get_return_data = self::pinPrinting($package->product_id_zain,$request->count,$package,$this->user,"online",$request->transaction_id);
                   if ($get_return_data == "error"){
                       return ApiController::respondWithError(trans('api.error_order'));
 
