@@ -524,7 +524,7 @@ class OrderController extends Controller
             }
         }
 
-
+        DB::commit(); // all good
         $data = [
             'gencode' => $package->product_id_zain,
             'total_price'=>(string)($package->card_price * $count),
