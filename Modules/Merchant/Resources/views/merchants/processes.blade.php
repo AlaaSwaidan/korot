@@ -131,6 +131,26 @@
                             </form>
                         </div>
                         <!--end::Toolbar-->
+                        <br>
+                        <!--begin::Toolbar-->
+                        <div class="d-flex justify-content-end" data-kt-subscription-table-toolbar="base">
+                            <form action="{{route('admin.processes.pdf')}}" method="post" >
+                                @csrf
+
+                                <button type="submit"  class="btn btn-info disabledbutton">
+                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+                                    <i class="fas fa-file-pdf"></i>
+                                    <!--end::Svg Icon-->
+                                </button>
+                                <input type="hidden" name="type" value="merchants">
+                                <input type="hidden" name="user_id" value="{{ $merchant->id }}">
+                                <input type="hidden" name="from_date" value="{{ isset($startDate) ? $startDate : null }}">
+                                <input type="hidden" name="to_date" value="{{ isset($endDate) ? $endDate : null }}">
+                                <input type="hidden" name="time" value="{{ isset($time) ? $time : null }}">
+
+                            </form>
+                        </div>
+                        <!--end::Toolbar-->
                     </div>
                     <!--end::Card toolbar-->
                 </div>

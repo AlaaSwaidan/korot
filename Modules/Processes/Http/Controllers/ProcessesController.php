@@ -3,11 +3,16 @@
 namespace Modules\Processes\Http\Controllers;
 
 use App\Exports\ProcessExport;
+use App\Models\Merchant;
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Processes\Repositories\ProcessesRepository;
+use Modules\Transfers\Entities\Transfer;
+use PDF;
 
 class ProcessesController extends Controller
 {
@@ -58,5 +63,77 @@ class ProcessesController extends Controller
 
         return Excel::download(new ProcessExport($request), 'process_'.randNumber(4)."."."xlsx");
 
+    }
+    public function pdf(Request $request){
+
+        $merchant = Merchant::find($request->user_id);
+        $data = Transfer::where('userable_type',getClassModel($request->type))->Order();
+        if ($request->time == "today"){
+            $data = $data->whereDate('created_at',Carbon::now());
+        }
+        if ($request->time == "yesterday"){
+            $data = $data->whereDate('created_at',Carbon::now()->subDay());
+        }
+        if ($request->process_type ){
+            $data = $data->where('type',$request->process_type);
+        }
+        if ($request->time == "current_week"){
+            $data = $data->whereBetween('created_at',
+                [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
+            );
+        }
+        if ($request->time == "current_month"){
+            $data = $data->whereBetween('created_at',
+                [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]
+            );
+        }
+        if ($request->time == "month_ago"){
+            $data = $data->whereMonth(
+                'created_at', '=', Carbon::now()->subMonth()->month
+            );
+        }
+        if ($request->time == "exact_time"){
+            $startDate = Carbon::parse($request->from_date);
+            $endDate = Carbon::parse($request->to_date);
+            $data = $data->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate]);
+        }
+        if ($request->user_name){
+            $data = $data->whereHas('user',function ($q) use($request){
+                $q->where('name', 'LIKE', "%$request->user_name%");
+            });
+        }
+        if ($request->user_id){
+            $data = $data->whereHas('user',function ($q) use($request){
+                $q->where('id', 'LIKE', "%$request->user_id%");
+            });
+        }
+        $data =$data->get();
+
+        $all_data=[
+            'data'=>$data,
+            'user'=>$merchant,
+            'time'=>$request->time,
+            'type'=>$request->type,
+            'from_date'=>$request->from_date,
+        ];
+        $html = view('merchant::pdf.processes_pdf')->with($all_data)->render();
+        $id = 'all-transactions';
+        $pdfarr = [
+            'title'=>'الفاتورة ',
+            'data'=>$html, // render file blade with content html
+            'header'=>['show'=>false], // header content
+            'footer'=>['show'=>false], // Footer content
+            'font'=>'aealarabiya', //  dejavusans, aefurat ,aealarabiya ,times
+            'font-size'=>12, // font-size
+            'text'=>'', //Write
+            'rtl'=>true, //true or false
+            'creator'=>'Korot', // creator file - you can remove this key
+            'keywords'=>$id , // keywords file - you can remove this key
+            'subject'=>'Invoice', // subject file - you can remove this key
+            'filename'=>'Invoice-'.$id.'.pdf', // filename example - invoice.pdf
+            'display'=>'stream', // stream , download , print
+        ];
+
+        return PDF::HTML($pdfarr);
     }
 }

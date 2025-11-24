@@ -19,6 +19,7 @@ Route::group(['prefix' => '/admin', 'as' => 'admin.', 'middleware' => ['CheckAct
 
     Route::get('/processes/search', [ProcessesController::class, "search"])->name('processes.search');
     Route::post('/processes/excel', [ProcessesController::class, "excel"])->name('processes.excel');
+    Route::post('/processes/pdf', [ProcessesController::class, "pdf"])->name('processes.pdf');
     Route::resource('processes', ProcessesController::class, ['except' => 'destroy']);
 
     /*start search*/
