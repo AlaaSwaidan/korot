@@ -131,9 +131,9 @@
                             </form>
                         </div>
                         <!--end::Toolbar-->
-                        <br>
+
                         <!--begin::Toolbar-->
-                        <div class="d-flex justify-content-end" data-kt-subscription-table-toolbar="base">
+                        <div class="d-flex justify-content-end" data-kt-subscription-table-toolbar="base" style="margin-right: 10px">
                             <form action="{{route('admin.processes.pdf')}}" method="post" >
                                 @csrf
 
