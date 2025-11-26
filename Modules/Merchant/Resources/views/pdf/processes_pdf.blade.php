@@ -65,73 +65,44 @@
     </tr>
     </thead>
     <tbody>
-    <?php
-        $i=1;
-        ?>
-    @foreach($data as $value)
-        <?php
-            $get_data = \Modules\Transfers\Entities\Transfer::where('userable_type',getClassModel($type))->Order();
-
-            if (isset($get_data)){
-                $transfers = clone $get_data;
-                $collections = clone $get_data;
-                $repayment = clone $get_data;
-                $indebtedness = clone $get_data;
-                $indebtedness1 = clone $get_data;
-                $profits = clone $get_data;
-                $profits1 = clone $get_data;
-            }
-
-            if (isset($time) && $time == "today") {
-                $transfers = $transfers->where('type','transfer')->whereDate('created_at', \Carbon\Carbon::now())->sum('amount');
-                $collections = $collections->where('type','collection')->whereDate('created_at', \Carbon\Carbon::now())->sum('amount');
-                $repayment = $repayment->where('type','repayment')->whereDate('created_at', \Carbon\Carbon::now())->sum('amount');
-                $indebtedness = $indebtedness->where('type','indebtedness')->whereDate('created_at', \Carbon\Carbon::now())->sum('amount')+
-                    $indebtedness1->where('type','payment')->whereDate('created_at', \Carbon\Carbon::now())->sum('amount') ;
-                $profits = $profits->where('type','profits')->whereDate('created_at', \Carbon\Carbon::now())->sum('amount')+
-                    $profits1->where('type','sales')->whereDate('created_at', \Carbon\Carbon::now())->sum('profits') ;
-            }elseif (isset($time) && $time == "exact_time"){
-                $startDate =\Carbon\Carbon::parse($from_date);
-                $transfers = $transfers->where('type','transfer')->whereBetween('created_at', [$startDate, $value->created_at])->sum('amount');
-                $collections = $collections->where('type','collection')->whereBetween('created_at', [$startDate, $value->created_at])->sum('amount');
-                $repayment = $repayment->where('type','repayment')->whereBetween('created_at', [$startDate, $value->created_at])->sum('amount');
-                $indebtedness = $indebtedness->where('type','indebtedness')->whereBetween('created_at', [$startDate, $value->created_at])->sum('amount')+
-                    $indebtedness1->where('type','payment')->whereBetween('created_at', [$startDate, $value->created_at])->sum('amount');
-                $profits = $profits->where('type','profits')->whereBetween('created_at', [$startDate, $value->created_at])->sum('amount')+
-                    $profits1->where('type','sales')->whereBetween('created_at', [$startDate, $value->created_at])->sum('profits');
-            }else{
-                $transfers =$value->type == "transfer"?  ($value->transfers_total ?? 0) : '';
-                $collections =$value->type == "collection"?  ($value->collection_total ?? 0) : '';
-                $repayment =$value->type == "repayment"?  ($value->repayment_total ?? 0) : '';
-                $indebtedness =$value->type == "indebtedness" || $value->type == "payment" ? ($value->indebtedness ?? 0) : '';
-                $profits =$value->type == "profits" || $value->type == "sales"  ? $value->profits_total : '';
-            }
-            ?>
+    @foreach($data as $i => $value)
         <tr>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $i++ }}</td>
-            <td style="border:1px solid #dee2e6;">
-                {{ getProcessType($value->type) }} -
-                {{ $value->type == "sales"  ? ($value->order->payment_method == "wallet" ? 'محفظة' : 'جيديا') :''  }}
+            <td>{{ $i + 1 }}</td>
 
+            <td>
+                {{ getProcessType($value->type) }}
+                @if($value->type == "sales")
+                    {{ $value->order->payment_method == "wallet" ? 'محفظة' : 'جيديا' }}
+                @endif
             </td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->type == "recharge"  ? $value->transaction_id : '---'}}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->amount }}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->type == "transfer"?  $transfers : '' }}</td>
-{{--            <td style="border:1px solid #dee2e6;text-align:center;">{{ number_format($order->cost,2) }}</td>--}}
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->type == "collection"? $collections : '' }}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->type == "indebtedness" || $value->type == "payment" ? $indebtedness : '' }}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->type == "repayment"? $repayment : '' }}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->type == "profits" || $value->type == "sales"  ? $value->profits : ''}}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->type == "profits" || $value->type == "sales"  ?  $profits : '' }}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->balance_total}}</td>
-            <td style="border:1px solid #dee2e6;text-align:center;">{{ $value->created_at->format('Y-m-d g:i A') }}</td>
-{{--            <td style="border:1px solid #dee2e6;text-align:center;">{{  number_format(\Modules\Transfers\Entities\Transfer::whereOrderId($order->parent_id)->latest('created_at')->first()->balance_total,2) }} </td>--}}
 
-       </tr>
+            <td>{{ $value->type == "recharge" ? $value->transaction_id : '---' }}</td>
+            <td>{{ $value->amount }}</td>
+
+            {{-- Transfers --}}
+            <td>{{ $value->type == "transfer" ? $totals->total_transfers : '' }}</td>
+
+            {{-- Collections --}}
+            <td>{{ $value->type == "collection" ? $totals->total_collections : '' }}</td>
+
+            {{-- Indebtedness / Payment --}}
+            <td>{{ in_array($value->type, ['indebtedness','payment']) ? $totals->total_indebtedness : '' }}</td>
+
+            {{-- Repayment --}}
+            <td>{{ $value->type == "repayment" ? $totals->total_repayment : '' }}</td>
+
+            {{-- Profits (profit per row + total profits) --}}
+            <td>{{ in_array($value->type, ['profits','sales']) ? $value->profits : '' }}</td>
+
+            <td>{{ in_array($value->type, ['profits','sales']) ? $totals->total_profits + $totals->total_sales_profits : '' }}</td>
+
+            <td>{{ $value->balance_total }}</td>
+            <td>{{ $value->created_at->format('Y-m-d g:i A') }}</td>
+
+        </tr>
     @endforeach
-
-
     </tbody>
+
 </table>
 </body>
 </html>
