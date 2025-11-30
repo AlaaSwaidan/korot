@@ -234,6 +234,48 @@
     <!--end::Input group-->
 
     <hr>
+    <!--begin::Input group-->
+    <div class="fv-row row mb-15">
+        <!--begin::Col-->
+        <div class="col-md-3 d-flex align-items-center">
+            <!--begin::Label-->
+            <label class="fs-6 fw-semibold">Package Id for twelve</label>
+            <!--end::Label-->
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-md-9">
+            <!--begin::Input-->
+            <input type="text"  class="form-control form-control-lg form-control-solid" name="package_id_twelve" placeholder="Package Id for Twelve"
+                   value="{{ isset($package) ? $package->package_id_twelve : old('package_id_twelve') }}">
+            <!--end::Input-->
+        </div>
+        <!--end::Col-->
+    </div>
+    <!--begin::Input group-->
+    <!--begin::Input group-->
+    <div class="fv-row row mb-15">
+        <!--begin::Col-->
+        <div class="col-md-3 d-flex align-items-center">
+            <!--begin::Label-->
+            <label class="fs-6 fw-semibold">حالة Twelve</label>
+            <!--end::Label-->
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-md-9">
+            <!--begin::Switch-->
+            <div class="form-check form-switch form-check-custom form-check-solid me-10">
+                <input class="form-check-input h-30px w-50px" name="twelve_status" type="checkbox" value="1" {{ isset($package) ?( $package->twelve_status ? "checked" : '') : '' }} id="twelve_status" />
+                <label class="form-check-label" for="twelve_status">مفعل</label>
+            </div>
+            <!--begin::Switch-->
+        </div>
+        <!--end::Col-->
+    </div>
+    <!--end::Input group-->
+
+    <hr>
 
     <!--begin::Input group-->
     <div class="fv-row row mb-15">

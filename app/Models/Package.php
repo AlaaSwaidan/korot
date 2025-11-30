@@ -28,6 +28,8 @@ class Package extends Model
         'zain_status',
         'price_zain',
         'product_id_zain',
+        'twelve_status',
+        'package_id_twelve',
     ];
     protected $casts=[
         'name'=>'json',
