@@ -67,7 +67,11 @@ class ProcessExport implements FromCollection, WithHeadings, WithMapping, Should
 
     public function map($process): array
     {
-        $get_data = Transfer::where('userable_type',getClassModel($this->type))->Order();
+        $merchant = Merchant::find($this->user_id);
+
+        $get_data = $merchant->userable()
+            ->where('paid_order','paid')
+            ->Order();
         $time = $this->time;
         if (isset($get_data)){
             $transfers = clone $get_data;
