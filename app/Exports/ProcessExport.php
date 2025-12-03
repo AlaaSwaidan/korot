@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Card;
+use App\Models\Merchant;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -40,46 +41,20 @@ class ProcessExport implements FromCollection, WithHeadings, WithMapping, Should
     }
     public function collection()
     {
-        $data = Transfer::where('userable_type',getClassModel($this->type))->where('userable_id',$this->user_id)->Order();
-        if ($this->time == "today"){
-            $data = $data->whereDate('created_at',Carbon::now());
+
+        $merchant = Merchant::find($this->user_id);
+        $data =$merchant->userable()->where('paid_order','paid')->Order();
+        $time = $this->time;
+        if ($time == "today") {
+            $data = $data->whereDate('created_at', Carbon::now());
         }
-        if ($this->time == "yesterday"){
-            $data = $data->whereDate('created_at',Carbon::now()->subDay());
-        }
-        if ($this->process_type ){
-            $data = $data->where('type',$this->process_type);
-        }
-        if ($this->time == "current_week"){
-            $data = $data->whereBetween('created_at',
-                [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
-            );
-        }
-        if ($this->time == "current_month"){
-            $data = $data->whereBetween('created_at',
-                [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]
-            );
-        }
-        if ($this->time == "month_ago"){
-            $data = $data->whereMonth(
-                'created_at', '=', Carbon::now()->subMonth()->month
-            );
-        }
-        if ($this->time == "exact_time"){
+        if ($time == "exact_time"){
             $startDate = Carbon::parse($this->from_date);
             $endDate = Carbon::parse($this->to_date);
-            $data = $data->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate]);
+
+            $data = $data->whereBetween(\DB::raw('DATE(created_at)'), [$startDate, $endDate]);
         }
-        if ($this->user_name){
-            $data = $data->whereHas('user',function ($q){
-                $q->where('name', 'LIKE', "%$this->user_name%");
-            });
-        }
-//        if ($this->user_id){
-//            $data = $data->whereHas('user',function ($q){
-//                $q->where('id', 'LIKE', "%$this->user_id%");
-//            });
-//        }
+
         $data =$data->get();
         return $data;
     }

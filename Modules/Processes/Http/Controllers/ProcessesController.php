@@ -67,9 +67,10 @@ class ProcessesController extends Controller
     }
     public function pdf(Request $request)
     {
+      
         $merchant = Merchant::findOrFail($request->user_id);
 
-        $baseQuery = Transfer::query();
+        $baseQuery =$merchant->userable()->where('paid_order','paid')->Order();
         TransferFilters::apply($baseQuery, $request);
 
         // Get list

@@ -98,7 +98,7 @@ class SearchController extends Controller
 
     public function search_processes(Request $request ,Merchant $merchant)
     {
-        $data =$merchant->userable()->Order();
+        $data =$merchant->userable() ->where('paid_order','paid')->Order();
         $get_data = clone $data;
         $startDate = $request->from_date;
         $endDate = $request->to_date;
