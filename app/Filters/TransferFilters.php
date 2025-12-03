@@ -11,7 +11,7 @@ class TransferFilters
     public static function apply($query, Request $request)
     {
         // Type
-        $query->where('userable_type', getClassModel($request->type));
+        $query->where('userable_type', getClassModel($request->type))->where('userable_id',$request->user_id);
 
         // Process type
         if ($request->process_type) {
@@ -26,11 +26,11 @@ class TransferFilters
         }
 
         // User ID
-        if ($request->user_id) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('id', 'LIKE', "%{$request->user_id}%");
-            });
-        }
+//        if ($request->user_id) {
+//            $query->whereHas('user', function ($q) use ($request) {
+//                $q->where('id', 'LIKE', "%{$request->user_id}%");
+//            });
+//        }
 
         // Date filters
         if ($request->time == "today") {

@@ -40,7 +40,7 @@ class ProcessExport implements FromCollection, WithHeadings, WithMapping, Should
     }
     public function collection()
     {
-        $data = Transfer::where('userable_type',getClassModel($this->type))->Order();
+        $data = Transfer::where('userable_type',getClassModel($this->type))->where('userable_id',$this->user_id)->Order();
         if ($this->time == "today"){
             $data = $data->whereDate('created_at',Carbon::now());
         }
@@ -75,11 +75,11 @@ class ProcessExport implements FromCollection, WithHeadings, WithMapping, Should
                 $q->where('name', 'LIKE', "%$this->user_name%");
             });
         }
-        if ($this->user_id){
-            $data = $data->whereHas('user',function ($q){
-                $q->where('id', 'LIKE', "%$this->user_id%");
-            });
-        }
+//        if ($this->user_id){
+//            $data = $data->whereHas('user',function ($q){
+//                $q->where('id', 'LIKE', "%$this->user_id%");
+//            });
+//        }
         $data =$data->get();
         return $data;
     }
