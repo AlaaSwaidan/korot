@@ -96,21 +96,39 @@
                     </div>
                     <!--end::Group actions-->
                     <!--begin::Card title-->
-                    <!-- Inline Form -->
                     <form action="{{ route('admin.merchants.search') }}" method="get">
-                        <div class="form-group mb-3">
-                            <div class="form-row justify-content-end align-items-center">
+                        <div class="d-flex align-items-center gap-3">
 
-                                <div class="form-group" style="position: relative">
-                                    <input type="text" autocomplete="off" name="username" value="{{ isset($username)?$username:'' }}" id="search-input-field" placeholder="البحث باسم او رقم الجوال او ID">
-                                    <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
-                                </div>
+                            <!-- Search Input -->
+                                <input type="text"
+                                       name="username"
+                                       autocomplete="off"
+                                       value="{{ $username ?? '' }}"
+                                       id="search-input-field"
+                                       placeholder="البحث باسم او رقم الجوال او ID"
+                                       class="form-control"
+                                       style="padding-right: 35px;">
 
-                            </div>
+
+
+                            <!-- Time Select -->
+                            <select class="form-select form-select-solid"
+                                    name="is_inactive"
+                                    data-control="select2"
+                                    data-placeholder="حالة التجار"
+                                    data-hide-search="true"
+                                    style="min-width:150px;">
+                                <option value=""></option>
+                                <option value="1" {{ (isset($is_inactive) && $is_inactive == 1) ? 'selected' : '' }}>خامل</option>
+                                <option value="0" {{ (isset($is_inactive) && $is_inactive == 0) ? 'selected' : '' }}>نشط</option>
+                            </select>
+                            <!-- Search Button -->
+                            <button type="submit" class="btn btn-primary">
+                                 بحث
+                            </button>
                         </div>
-
                     </form>
-                    <!-- end row -->
+
                     <!--begin::Card title-->
                     <!--begin::Card toolbar-->
                     <div class="card-toolbar">
