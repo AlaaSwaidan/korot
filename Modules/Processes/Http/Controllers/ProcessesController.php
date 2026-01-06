@@ -67,16 +67,66 @@ class ProcessesController extends Controller
     }
     public function pdf(Request $request)
     {
-      
         $merchant = Merchant::findOrFail($request->user_id);
 
-        $baseQuery =$merchant->userable()->where('paid_order','paid')->Order();
+        $baseQuery = $merchant->userable()->where('paid_order','paid')->Order();
         TransferFilters::apply($baseQuery, $request);
 
-        // Get list
-        $data = $baseQuery->with('order')->orderByDesc('id')->get();
+        $data = $baseQuery->with('order')
+            ->orderBy('created_at')   // Important for running totals
+            ->get();
 
-        // Totals (one query only)
+        // START DATE (for exact_time filter)
+        $startDate = $request->from_date ?? $data->first()->created_at;
+
+        // Preload profits sources
+        $profitsQuery = clone $baseQuery;
+        $salesQuery   = clone $baseQuery;
+
+        // Preload all profit rows (one query only)
+        $profitsList = $profitsQuery->where('type','profits')->get();
+        $salesList   = $salesQuery->where('type','sales')->get();
+
+        // Add running profits for each row
+        $running = 0;
+
+        foreach ($data as $row) {
+
+            if ($request->time == 'today') {
+
+                // Today only
+                $running =
+                    $profitsList->where('type','profits')
+                        ->where('created_at','>=', today())
+                        ->where('created_at','<=', $row->created_at)
+                        ->sum('amount')
+                    +
+                    $salesList->where('type','sales')
+                        ->where('created_at','>=', today())
+                        ->where('created_at','<=', $row->created_at)
+                        ->sum('profits');
+
+            } elseif ($request->time == 'exact_time') {
+
+                $running =
+                    $profitsList->where('created_at','>=', $startDate)
+                        ->where('created_at','<=', $row->created_at)
+                        ->sum('amount')
+                    +
+                    $salesList->where('created_at','>=', $startDate)
+                        ->where('created_at','<=', $row->created_at)
+                        ->sum('profits');
+
+            } else {
+                // Default: use pre-calculated column
+                $running = $row->profits_total;
+            }
+
+            // Attach to row
+            $row->running_profit = $running;
+        }
+
+        // Totals
         $totals = (clone $baseQuery)
             ->selectRaw("
             SUM(CASE WHEN type='transfer' THEN amount ELSE 0 END) AS total_transfers,
@@ -109,6 +159,7 @@ class ProcessesController extends Controller
             'display' => 'stream',
         ]);
     }
+
 //    public function pdf(Request $request){
 //
 //        $merchant = Merchant::find($request->user_id);

@@ -9,6 +9,7 @@ use App\Models\Merchant;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -119,23 +120,45 @@ class SearchController extends Controller
     public function search(Request $request)
     {
         $username = $request->username;
-        $data = Merchant::Order()->where('approve',1);
-        if ($username ) {
-            $data= $data->where(function ($q) use ($request) {
-                $q->where('name', 'like', $request->username . '%')
-                    ->orWhere('name', 'like', '%' . $request->username . '%');
-                $q->orWhere('phone', 'like', $request->username . '%')
-                    ->orWhere('phone', 'like', '%' . $request->username . '%');
-                $q->orWhere('id', '=', $request->username);
+        $is_inactive = $request->is_inactive;
 
+        $query = Merchant::Order()->where('approve', 1);
+
+        if ($username) {
+            $query->where(function ($q) use ($username) {
+                $q->where('name', 'like', '%' . $username . '%')
+                    ->orWhere('phone', 'like', '%' . $username . '%')
+                    ->orWhere('id', $username);
             });
         }
 
-        $data =$data->paginate(20)->appends(request()->except('page'));
-        $data->appends(['username'=>$request->username]);
+        // Get all results FIRST
+        $collection = $query->get();
 
-        return view('merchant::merchants.index',compact('data','username'));
+        // Add is_inactive flag
+        $collection = $collection->map(function ($item) {
+            $item->is_inactive =
+                $item->last_login_at === null ||
+                Carbon::parse($item->last_login_at)->lt(now()->subDays(7));
+            return $item;
+        });
 
+        // Filter by inactive
+        if ($is_inactive !== null && $is_inactive !== '') {
+            $is_inactive_bool = $is_inactive == 1;
+            $collection = $collection->filter(fn($item) => $item->is_inactive === $is_inactive_bool);
+        }
 
+        // Manual pagination
+        $data = new LengthAwarePaginator(
+            $collection->forPage(request('page', 1), 20),
+            $collection->count(),
+            20,
+            request('page', 1),
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('merchant::merchants.index', compact('data', 'username', 'is_inactive'));
     }
+
 }

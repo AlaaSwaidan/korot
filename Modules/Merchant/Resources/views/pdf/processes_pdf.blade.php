@@ -94,7 +94,7 @@
             {{-- Profits (profit per row + total profits) --}}
             <td>{{ in_array($value->type, ['profits','sales']) ? $value->profits : '' }}</td>
 
-            <td>{{ in_array($value->type, ['profits','sales']) ? $totals->total_profits + $totals->total_sales_profits : '' }}</td>
+            <td>{{ $value->running_profit }}</td>
 
             <td>{{ $value->balance_total }}</td>
             <td>{{ $value->created_at->format('Y-m-d g:i A') }}</td>
