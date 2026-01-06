@@ -126,7 +126,7 @@ function create_order($product_id,$count,$package,$user,$payment_method, $transa
         return ApiController::respondWithSuccess($data);
 //        return $all_ids;
     }else{
-        return "error";
+        return ["error" =>"error" ,'message'=>$data->message];
     }
 
 }
