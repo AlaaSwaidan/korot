@@ -105,7 +105,7 @@ class OrderController extends Controller
                   $result = $this->check_balance($this->user , $request->count , $package);
                   if ($result == 0) return ApiController::respondWithError(trans('api.Your_balance_is_not_enough'));
                   $get_return_data = create_order($package->gencode_like_card,$request->count,$package,$this->user,$request->payment_method);
-                  if ($get_return_data['error'] == "error"){
+                  if (isset($get_return_data['error']) && $get_return_data['error'] == "error"){
                       return ApiController::respondWithError($get_return_data['message']);
 
                   }else{
@@ -115,7 +115,7 @@ class OrderController extends Controller
               else  if ($request->payment_method == "online"){
                   //api_linked for transfers table and orders
                   $get_return_data = create_order($package->gencode_like_card,$request->count,$package,$this->user,"online",$request->transaction_id);
-                  if ($get_return_data['error'] == "error"){
+                  if (isset($get_return_data['error']) && $get_return_data['error'] == "error"){
                       return ApiController::respondWithError($get_return_data['message']);
 
                   }else{
