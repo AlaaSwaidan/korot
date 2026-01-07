@@ -124,9 +124,10 @@ function create_order($product_id,$count,$package,$user,$payment_method, $transa
         ];
         DB::commit(); // all good
         return ApiController::respondWithSuccess($data);
+
 //        return $all_ids;
     }else{
-        return ["error" =>"error" ,'message'=>$data->message];
+        return ApiController::respondWithError(["error" =>"error" ,'message'=>$data->message]);
     }
 
 }
