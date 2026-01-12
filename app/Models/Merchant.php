@@ -95,7 +95,7 @@ class Merchant extends Authenticatable implements JWTSubject
     }
     public function distributor()
     {
-        return $this->belongsTo(Distributor::class,'distributor_id');
+        return $this->belongsTo(Distributor::class,'distributor_id')->withTrashed();
     }
     public function city()
     {
