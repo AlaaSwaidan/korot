@@ -29,4 +29,27 @@ class ToPupLikeCardController extends Controller
             ], 500);
         }
     }
+    public function check_price(Request $request, Like4AppService $like4App)
+    {
+        $validated = $request->validate([
+            'phone'        => 'required|string',
+            'skuCode'        => 'required',
+            'receiveAmount'        => 'required|numeric',
+        ]);
+
+        try {
+            $products = $like4App->checkProductPrice($validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => $products,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Like4App API error',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
