@@ -3,15 +3,30 @@
 namespace App\Http\Controllers\Api\Merchant;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
-
+use App\Services\Like4AppService;
+use Illuminate\Http\Request;
 class ToPupLikeCardController extends Controller
 {
 
-    public function toPupLikecard(Request  $request)
+    public function products(Request $request, Like4AppService $like4App)
     {
-        $get_return_data = toPup($request->phone,$request->amount);
-        dd($get_return_data);
+        $validated = $request->validate([
+            'phone'        => 'required|string',
+        ]);
 
+        try {
+            $products = $like4App->getTopupProducts($validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => $products,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Like4App API error',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

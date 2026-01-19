@@ -9,6 +9,7 @@ use Modules\Accounts\Http\Controllers\BanksController;
 use Modules\Accounts\Http\Controllers\OutgoingsController;
 use App\Http\Controllers\Admin\ExportSuspendedCardController;
 use App\Http\Controllers\Admin\CompinedInvoicesController;
+use App\Http\Controllers\Admin\CountrySettingsController;
 
 /* start admin control*/
 Route::get('/test', function () {
@@ -67,7 +68,11 @@ Route::group(['prefix' =>'/admin', 'as' => 'admin.', 'middleware' => ['CheckActi
     Route::get( '/settings', [SettingController::class,"index"])->name('settings.index');
     Route::post( '/settings/update/{setting}', [SettingController::class,"update"])->name('settings.update');
 
+    Route::post( '/country-settings/destroy', [CountrySettingsController::class,"destroy"])->name('country-settings.destroy');
+
     Route::resource('currencies', CurrencyController::class, ['except' => 'destroy']);
+
+    Route::resource('country-settings', CountrySettingsController::class, ['except' => 'destroy']);
 
     Route::post('/currencies/selected/destroy', [CurrencyController::class, "destroy_selected_rows"])->name('currencies.selected.destroy');
 

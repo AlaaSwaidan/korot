@@ -13,5 +13,6 @@
     "SendNotification": true,
     "Purchases": true,
     "Accounts": true,
-    "Reports": true
+    "Reports": true,
+    "CountrySettings": true
 }

@@ -35,5 +35,7 @@ return [
         'key' => env('TWELVE_API_KEY','c49e4f27-3dcf-47a4-b521-86ab51af49f3'),
         'secret' => env('TWELVE_API_SECRET','df95aee4a0129ddc7167fbc0f37db29782be32c8c6f0ce0d1f86ee8861f9d977'),
     ],
-
+    'like4app' => [
+        'base_url' => env('LIKE4APP_BASE_URL','https://taxes.like4app.com'),
+    ],
 ];

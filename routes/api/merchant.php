@@ -70,7 +70,9 @@ Route::namespace('Api')->middleware(['Lang'])->group( function () {
         Route::post( '/indebtedness-bank-transfer', [IndebtednessController::class,"indebtedness_transfer_bank"]);
         Route::post( '/indebtedness-online', [IndebtednessController::class,"indebtedness_online"]);
         Route::post( '/add-order', [OrderController::class,"add_order"]);
-        Route::post( '/add-topup', [ToPupLikeCardController::class,"toPupLikecard"]);
+        Route::post('/like4app/products', [ToPupLikeCardController::class, 'products']);
+
+//        Route::post( '/add-topup', [ToPupLikeCardController::class,"toPupLikecard"]);
         Route::post( '/confirm-payment', [OrderController::class,"confirm_payment"]);
         Route::post( '/change-order-print-status', [OrderController::class,"change_order_print_status"]);
         Route::post( '/change-card-print-status', [OrderController::class,"change_card_print_status"]);
