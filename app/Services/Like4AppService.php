@@ -32,7 +32,7 @@ class Like4AppService
                 'password'     => '18c5fd46f0d3ba3929b88feb9e1c4ebe8cd66a5db9a5dd3363f991c727530e5917b96f86a92c4742e9ce77c8a6cf59ec',
                 'securityCode' => 'e8f8aca5140c40104f2ccdaf8909953d8f5184e66a43a6d04765fded11afe8e6',
                 'langId'       => 1,
-                'phone'        => $data['phone'],
+                'phone'        => $data['country_code'].$data['phone'],
                 'time'         => $time,
             ]);
 
@@ -55,7 +55,7 @@ class Like4AppService
                 'password'     => '18c5fd46f0d3ba3929b88feb9e1c4ebe8cd66a5db9a5dd3363f991c727530e5917b96f86a92c4742e9ce77c8a6cf59ec',
                 'securityCode' => 'e8f8aca5140c40104f2ccdaf8909953d8f5184e66a43a6d04765fded11afe8e6',
                 'langId'       => 1,
-                'phone'        => $data['phone'],
+                'phone'        => $data['country_code'].$data['phone'],
                 'skuCode'        => $data['skuCode'],
                 'receiveAmount'        => $data['amount'],
                 'time'         => $time,

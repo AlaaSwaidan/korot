@@ -11,6 +11,7 @@ class ToPupLikeCardController extends Controller
     public function products(Request $request, Like4AppService $like4App)
     {
         $validated = $request->validate([
+            'country_code'        => 'required|string',
             'phone'        => 'required|string',
         ]);
 
@@ -33,6 +34,7 @@ class ToPupLikeCardController extends Controller
     {
         $validated = $request->validate([
             'phone'        => 'required|string',
+            'country_code'        => 'required|string',
             'skuCode'        => 'required',
             'amount'        => 'required|numeric',
         ]);
