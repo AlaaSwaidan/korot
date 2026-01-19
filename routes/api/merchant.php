@@ -72,6 +72,7 @@ Route::namespace('Api')->middleware(['Lang'])->group( function () {
         Route::post( '/add-order', [OrderController::class,"add_order"]);
         Route::post('/like4app/products', [ToPupLikeCardController::class, 'products']);
         Route::post('/like4app/check-price', [ToPupLikeCardController::class, 'check_price']);
+        Route::post('/like4app/send', [ToPupLikeCardController::class, 'send']);
 
 //        Route::post( '/add-topup', [ToPupLikeCardController::class,"toPupLikecard"]);
         Route::post( '/confirm-payment', [OrderController::class,"confirm_payment"]);

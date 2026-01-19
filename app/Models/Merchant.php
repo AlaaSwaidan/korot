@@ -58,6 +58,7 @@ class Merchant extends Authenticatable implements JWTSubject
     'region_id',
     'mada_pay',
     'last_login_at',
+    'topup_wallet',
     ];
     protected $hidden = [
         'password',

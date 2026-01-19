@@ -38,5 +38,9 @@ class Statistic extends Model
         'digital_balance',
         'geidea_commission',
         'geidea_wallet',
+
+
+        'topup_wallet',
+        'topup_cost',
     ];
 }
