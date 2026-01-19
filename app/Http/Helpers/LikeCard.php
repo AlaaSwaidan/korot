@@ -42,6 +42,7 @@ function create_order($product_id,$count,$package,$user,$payment_method, $transa
 
     curl_close($curl);
     $data = json_decode($response);
+  
     if (isset($data) && $data->response == 1){
         if ($new_price =$user->prices()->where('package_id',$package->id)->where('type',$user->type)->first()){
             $merchant_price = $new_price->price;
