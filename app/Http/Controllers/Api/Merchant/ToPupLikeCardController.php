@@ -74,11 +74,11 @@ class ToPupLikeCardController extends Controller
 
         try {
             $products = $like4App->send($validated);
-
+dd($products);
             if ($products['data']['response'] == 1){
                 $country = CountrySetting::where('code',$validated['country_code'])->first();
                 $merchant_percent = $country ? $country->merchant_percentage : 1;
-                $profit = $request->sellPrice - $request->price;
+                $profit = (float)$request->sellPrice - (float)$request->price;
                 $merchant_profit = $profit * $merchant_percent / 100;
                 $admin_profit = $profit - $merchant_profit;
 
@@ -95,7 +95,9 @@ class ToPupLikeCardController extends Controller
                     'merchant_profit'=>$merchant_profit,
                     'admin_profit'=>$admin_profit
                 ]);
+
                 $this->user->increment('topup_wallet', $merchant_profit);
+
                 $statictics = Statistic::find(1);
                 $statictics->increment('topup_wallet',$admin_profit);
 
