@@ -34,7 +34,7 @@ class ToPupLikeCardController extends Controller
         $validated = $request->validate([
             'phone'        => 'required|string',
             'skuCode'        => 'required',
-            'receiveAmount'        => 'required|numeric',
+            'amount'        => 'required|numeric',
         ]);
 
         try {

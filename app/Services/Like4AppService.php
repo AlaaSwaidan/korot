@@ -57,7 +57,7 @@ class Like4AppService
                 'langId'       => 1,
                 'phone'        => $data['phone'],
                 'skuCode'        => $data['skuCode'],
-                'receiveAmount'        => $data['receiveAmount'],
+                'receiveAmount'        => $data['amount'],
                 'time'         => $time,
             ]);
 
