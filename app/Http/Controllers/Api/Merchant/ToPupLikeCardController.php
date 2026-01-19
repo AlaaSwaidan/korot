@@ -74,8 +74,8 @@ class ToPupLikeCardController extends Controller
 
         try {
             $products = $like4App->send($validated);
-dd($products);
-            if ($products['data']['response'] == 1){
+dd($products['response']);
+            if ($products['response'] == 1){
                 $country = CountrySetting::where('code',$validated['country_code'])->first();
                 $merchant_percent = $country ? $country->merchant_percentage : 1;
                 $profit = (float)$request->sellPrice - (float)$request->price;
