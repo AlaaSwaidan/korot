@@ -60,7 +60,7 @@ class Like4AppService
                 'receiveAmount'        => $data['amount'],
                 'time'         => $time,
             ]);
-dd($response);
+
         if ($response->failed()) {
             throw new RequestException($response);
         }
