@@ -35,8 +35,7 @@ class Like4AppService
                 'phone'        => $data['phone'],
                 'time'         => $time,
             ]);
-
-        dd($response);
+        
         if ($response->failed()) {
             throw new RequestException($response);
         }
