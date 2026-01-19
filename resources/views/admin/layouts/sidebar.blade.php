@@ -985,6 +985,16 @@
                         </div>
                         @endcan
                         <!--end:Menu item-->
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link {{ (strpos(URL::current(), 'country-settings') ) != false  ? 'active' : '' }}" href="{{ route('admin.country-settings.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">إعدادت الدول</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
                         <!--begin:Menu item-->
                         @can('view_currencies')
                         <div class="menu-item">
