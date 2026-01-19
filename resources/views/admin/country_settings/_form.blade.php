@@ -13,7 +13,7 @@
             <div class="col-md-9">
                 <!--begin::Input-->
                 <input type="text"  class="form-control form-control-lg form-control-solid" name="name" placeholder="الاسم"
-                       value="{{ isset($currency) ? $currency->name : old('name') }}">
+                       value="{{ isset($country_setting) ? $country_setting->name : old('name') }}">
                 <!--end::Input-->
             </div>
             <!--end::Col-->
@@ -32,7 +32,7 @@
             <div class="col-md-9">
                 <!--begin::Input-->
                 <input type="text"  class="form-control form-control-lg form-control-solid" name="country_code" placeholder="كود الدولة"
-                       value="{{ isset($currency) ? $currency->country_code : old('country_code') }}">
+                       value="{{ isset($country_setting) ? $country_setting->country_code : old('country_code') }}">
                 <!--end::Input-->
             </div>
             <!--end::Col-->
@@ -51,7 +51,7 @@
             <div class="col-md-9">
                 <!--begin::Input-->
                 <input type="number"  class="form-control form-control-lg form-control-solid" name="merchant_percentage" placeholder="النسبة"
-                       value="{{ isset($currency) ? $currency->merchant_percentage : old('merchant_percentage') }}">
+                       value="{{ isset($country_setting) ? $country_setting->merchant_percentage : old('merchant_percentage') }}">
                 <!--end::Input-->
             </div>
             <!--end::Col-->

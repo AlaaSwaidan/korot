@@ -48,7 +48,7 @@
 
             <!--begin::Card-->
             <div class="card card-flush">
-                {!! Form::model($currency, ['method' => 'PATCH', 'url' => route('admin.country-settings.update', $currency->id),'class' => 'form-horizontal']) !!}
+                {!! Form::model($country_setting, ['method' => 'PATCH', 'url' => route('admin.country-settings.update', $country_setting->id),'class' => 'form-horizontal']) !!}
                 @include('admin.country_settings._form')
                 {!! Form::close() !!}
             </div>
