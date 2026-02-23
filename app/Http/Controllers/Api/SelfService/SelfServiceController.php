@@ -36,6 +36,9 @@ class SelfServiceController extends Controller
                 $q->orWhere(function ($q3){
                     $q3->Where('gencode_status',1)->where('gencode','!=',null);
                 });
+                $q->orWhere(function ($q3){
+                    $q3->Where('twelve_status',1)->where('package_id_twelve','!=',null);
+                });
 
             });
         if ($request->name){
