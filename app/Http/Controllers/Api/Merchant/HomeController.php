@@ -86,6 +86,10 @@ class HomeController extends Controller
                     ->orWhere(function ($q3) {
                         $q3->where('zain_status', 1)
                             ->whereNotNull('product_id_zain');
+                    })
+                    ->orWhere(function ($q3) {
+                        $q3->where('twelve_status', 1)
+                            ->whereNotNull('package_id_twelve');
                     });
             })
             ->OrderByAdmin()
