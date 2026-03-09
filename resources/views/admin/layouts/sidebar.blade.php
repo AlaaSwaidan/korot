@@ -327,6 +327,29 @@
                             <!--end:Menu link-->
                         </div>
                         <!--begin:Menu item-->
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link {{ (strpos(URL::current(), 'saled-mada-cards') ) != false  ? 'active' : '' }}" href="{{ route('admin.saled-mada-cards.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                <span class="menu-title">تقارير البطاقات المباعة مدى</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                        <!--begin:Menu item-->
+                        <!--begin:Menu item-->
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link {{ (strpos(URL::current(), 'saled-cash-cards') ) != false  ? 'active' : '' }}" href="{{ route('admin.saled-cash-cards.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                <span class="menu-title">تقارير ارباح البطاقات المباعة كاش</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                        <!--begin:Menu item-->
                         <!--end:Menu item-->
                         <div class="menu-item">
                             <!--begin:Menu link-->

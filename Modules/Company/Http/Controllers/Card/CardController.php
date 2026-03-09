@@ -479,6 +479,88 @@ class CardController extends Controller
             'to_date'
         ));
     }
+    public function mada_saled_cards(Request $request)
+    {
+        $baseQuery = Order::query()
+            ->whereNotNull('parent_id')
+            ->where('payment_method', 'online')
+            ->where('paid_order', 'paid');
+
+        if (!$request->from_date && !$request->to_date) {
+            $baseQuery->whereBetween('updated_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ]);
+        } elseif ($request->from_date && !$request->to_date) {
+            $baseQuery->whereDate('updated_at', $request->from_date);
+        } elseif ($request->from_date && $request->to_date) {
+            $baseQuery->whereDate('updated_at', '>=', $request->from_date)
+                ->whereDate('updated_at', '<=', $request->to_date);
+        }
+
+        if ($request->package_id) {
+            $baseQuery->where('package_id', $request->package_id);
+        }
+
+        $aggregates = $baseQuery->selectRaw('
+        SUM(COALESCE(cost, 0)) AS total_cost,
+          SUM(COALESCE(card_price, 0)) AS total_card_price,
+        SUM(COALESCE(merchant_price, 0)) AS total_merchant_price
+    ')->first();
+
+        $aggregates->all_total_profits =
+            ($aggregates->total_merchant_price ?? 0) - ($aggregates->total_cost ?? 0);
+
+        $from_date = $request->from_date;
+        $to_date = $request->to_date;
+
+        return view('company::saled.mada_index', compact(
+            'aggregates',
+            'from_date',
+            'to_date'
+        ));
+    }
+    public function wallet_saled_cards(Request $request)
+    {
+        $baseQuery = Order::query()
+            ->whereNotNull('parent_id')
+            ->where('payment_method', 'wallet')
+            ->where('paid_order', 'paid');
+
+        if (!$request->from_date && !$request->to_date) {
+            $baseQuery->whereBetween('updated_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ]);
+        } elseif ($request->from_date && !$request->to_date) {
+            $baseQuery->whereDate('updated_at', $request->from_date);
+        } elseif ($request->from_date && $request->to_date) {
+            $baseQuery->whereDate('updated_at', '>=', $request->from_date)
+                ->whereDate('updated_at', '<=', $request->to_date);
+        }
+
+        if ($request->package_id) {
+            $baseQuery->where('package_id', $request->package_id);
+        }
+
+        $aggregates = $baseQuery->selectRaw('
+        SUM(COALESCE(cost, 0)) AS total_cost,
+        SUM(COALESCE(card_price, 0)) AS total_card_price,
+        SUM(COALESCE(merchant_price, 0)) AS total_merchant_price
+    ')->first();
+
+        $aggregates->all_total_profits =
+            ($aggregates->total_merchant_price ?? 0) - ($aggregates->total_cost ?? 0);
+
+        $from_date = $request->from_date;
+        $to_date = $request->to_date;
+
+        return view('company::saled.cash_index', compact(
+            'aggregates',
+            'from_date',
+            'to_date'
+        ));
+    }
 
     public function search(Request $request){
 

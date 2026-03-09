@@ -46,6 +46,8 @@ Route::group(['prefix' => '/admin', 'as' => 'admin.', 'middleware' => ['CheckAct
 Route::post( '/sold-cards/recover', [CardController::class,"sold_cards_recover"])->name('sold-cards.recover');
 Route::get( '/imported-cards/index', [CardController::class,"imported_cards"])->name('imported-cards.index');
 Route::get( '/saled-cards/index', [CardController::class,"saled_cards"])->name('saled-cards.index');
+Route::get( '/saled-mada-cards/index', [CardController::class,"mada_saled_cards"])->name('saled-mada-cards.index');
+Route::get( '/saled-cash-cards/index', [CardController::class,"wallet_saled_cards"])->name('saled-cash-cards.index');
 Route::get( '/duplicated-cards/index', [CardController::class,"duplicated_cards"])->name('duplicated-cards.index');
 Route::get( '/reports-cards/index', [CardController::class,"reports_cards"])->name('reports-cards.index');
 Route::get( '/reports-sales-cards/index', [CardController::class,"reports_sales_cards"])->name('reports-sales-cards.index');
