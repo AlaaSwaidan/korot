@@ -165,6 +165,7 @@
                             <th >حالة العضوية</th>
                             <th >البريد الالكتروني</th>
                             <th >رقم الجوال</th>
+                            <th >مجموع ارصدة التجار</th>
                             <th >التاريخ</th>
                             <th >الخيارات</th>
                         </tr>
@@ -223,6 +224,11 @@
                             <!--begin::phone=-->
                             <td>
                                 <div class="badge badge-light">{{ $value->phone }}</div>
+                            </td>
+                            <!--end::phone=-->
+                            <!--begin::phone=-->
+                            <td>
+                                <div class="badge badge-light">{{ $value->merchants()->sum('balance') }}</div>
                             </td>
                             <!--end::phone=-->
                             <!--begin::Date=-->
