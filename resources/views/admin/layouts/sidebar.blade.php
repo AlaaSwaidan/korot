@@ -306,6 +306,18 @@
                         <!--end:Menu item-->
                         <div class="menu-item">
                             <!--begin:Menu link-->
+                            <a class="menu-link {{ (strpos(URL::current(), 'devices-report') ) != false  ? 'active' : '' }}" href="{{ route('admin.devices-report.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                <span class="menu-title">تقرير الاجهزة</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                        <!--begin:Menu item-->
+                        <!--end:Menu item-->
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
                             <a class="menu-link {{ (strpos(URL::current(), 'imported-cards') ) != false  ? 'active' : '' }}" href="{{ route('admin.imported-cards.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>

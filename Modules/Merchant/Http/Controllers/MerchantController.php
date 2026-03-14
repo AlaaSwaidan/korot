@@ -53,6 +53,50 @@ class MerchantController extends Controller
         return view('merchant::merchants.index',compact('data'));
     }
 
+    public function devices_report(Request $request)
+    {
+        $data = Merchant::Order()
+            ->where('approve', 1)
+            ->where('id', '!=', 632);
+
+        $data->withSum(['orders as wallet_total' => function ($q) use ($request) {
+            $q->whereNotNull('parent_id')
+                ->where('paid_order', 'paid')
+                ->where('payment_method', 'wallet');
+
+            if ($request->from_date && $request->to_date) {
+                $q->whereBetween(\DB::raw('DATE(created_at)'), [$request->from_date, $request->to_date]);
+            } elseif ($request->from_date) {
+                $q->whereDate('created_at', $request->from_date);
+            }
+        }], 'card_price');
+
+        $data->withSum(['orders as online_total' => function ($q) use ($request) {
+            $q->whereNotNull('parent_id')
+                ->where('paid_order', 'paid')
+                ->where('payment_method', 'online');
+
+            if ($request->from_date && $request->to_date) {
+                $q->whereBetween(\DB::raw('DATE(created_at)'), [$request->from_date, $request->to_date]);
+            } elseif ($request->from_date) {
+                $q->whereDate('created_at', $request->from_date);
+            }
+        }], 'card_price');
+
+        if ($request->has('mada_inactive') && $request->mada_inactive !== null && $request->mada_inactive !== '') {
+            if ((int) $request->mada_inactive === 0) {
+                $data->havingRaw('COALESCE(online_total, 0) = 0');
+            }
+
+            if ((int) $request->mada_inactive === 1) {
+                $data->havingRaw('COALESCE(online_total, 0) > 0');
+            }
+        }
+
+        $data = $data->paginate(20)->appends(request()->except('page'));
+
+        return view('merchant::merchants.devices_report', compact('data'));
+    }
     /**
      * Show the form for creating a new resource.
      * @return Renderable

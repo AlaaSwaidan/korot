@@ -24,6 +24,8 @@ Route::group(['prefix' => '/admin', 'as' => 'admin.', 'middleware' => ['CheckAct
     Route::post( '/merchants/new/selected/destroy', [NewMerchantController::class,"destroy_selected_rows"])->name('merchants.new.selected.destroy');
 
 
+    Route::get( '/devices-report/index', [MerchantController::class,"devices_report"])->name('devices-report.index');
+
     Route::resource('merchants', MerchantController::class, ['except' => 'destroy']);
     Route::post( '/merchants/destroy', [MerchantController::class,"destroy"])->name('merchants.destroy');
     Route::post( '/merchants/destroy-token', [MerchantController::class,"destroy_token"])->name('merchants.destroy-token');
